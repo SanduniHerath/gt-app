@@ -61,7 +61,10 @@ struct NotificationsView: View {
                                 icon: "exclamationmark.triangle.fill",
                                 color: .gtStatusUrgent,
                                 badgeText: "Urgent",
-                                actionTitle: "Diagnose now"
+                                actionTitle: "Diagnose now",
+                                action: {
+                                    router.navigate(to: .diagnosisResult)
+                                }
                             )
                             
                             NotificationCard(
@@ -129,6 +132,7 @@ struct NotificationCard: View {
     let color: Color
     var badgeText: String? = nil
     var actionTitle: String? = nil
+    var action: (() -> Void)? = nil
     
     var body: some View {
         HStack(spacing: 0) {
@@ -173,7 +177,7 @@ struct NotificationCard: View {
                         .foregroundColor(.gtTextMuted)
                     
                     if let actionTitle {
-                        Button { /* Action */ } label: {
+                        Button { action?() } label: {
                             Text(actionTitle)
                                 .font(GTFont.labelSmall())
                                 .foregroundColor(color)

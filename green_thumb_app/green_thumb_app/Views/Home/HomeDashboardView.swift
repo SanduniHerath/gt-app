@@ -105,11 +105,34 @@ struct HomeDashboardView: View {
                     .background(Color(red:0.95, green:0.95, blue:0.95))
                 }
             }
-            .background(Color.gtForestGreen.ignoresSafeArea())
+            .background(
+                VStack(spacing: 0) {
+                    Color.gtForestGreen.frame(height: 400)
+                    Color(red: 0.95, green: 0.95, blue: 0.95)
+                }
+                .ignoresSafeArea()
+            )
             .navigationDestination(isPresented: $showNotifications) { NotificationsView() }
             .navigationDestination(for: AppRoute.self) { route in
-                if case .gardenAnalytics = route {
+                switch route {
+                case .gardenAnalytics:
                     GardenAnalyticsView()
+                case .plantDetails(let plant):
+                    PlantDetailsView(plant: plant)
+                case .growthTimeline(let plant):
+                    PlantTimelineView(plant: plant)
+                case .addPlant:
+                    AddPlantView()
+                case .careGuide:
+                    CareGuideView()
+                case .diagnosisResult:
+                    DiagnosisResultView()
+                case .nearbyExperts:
+                    NearbyExpertsMapView()
+                case .notifications:
+                    NotificationsView()
+                default:
+                    EmptyView()
                 }
             }
         }

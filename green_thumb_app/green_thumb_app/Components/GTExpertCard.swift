@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GTExpertCard: View {
     let expert: ExpertModel
+    var onViewProfile: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: GTSpacing.md) {
@@ -68,15 +69,17 @@ struct GTExpertCard: View {
             }
 
             // Tags
-            HStack(spacing: GTSpacing.xs) {
-                ForEach(expert.tags, id: \.self) { tag in
-                    Text(tag)
-                        .font(GTFont.labelSmall())
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(tagBgColor(for: tag))
-                        .foregroundColor(tagTextColor(for: tag))
-                        .cornerRadius(GTRadius.full)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: GTSpacing.xs) {
+                    ForEach(expert.tags, id: \.self) { tag in
+                        Text(tag)
+                            .font(GTFont.labelSmall())
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 6)
+                            .background(tagBgColor(for: tag))
+                            .foregroundColor(tagTextColor(for: tag))
+                            .cornerRadius(GTRadius.full)
+                    }
                 }
             }
             
@@ -109,7 +112,7 @@ struct GTExpertCard: View {
                 
                 Spacer()
                 
-                Button(action: {}) {
+                Button(action: { onViewProfile?() }) {
                     Text("View Profile")
                         .font(GTFont.labelSmall())
                         .foregroundColor(.gtDarkGreen)

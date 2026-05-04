@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var selectedTab: Int = 0
+    @EnvironmentObject var router: AppRouter
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                switch selectedTab {
+                switch router.selectedTab {
                 case 0: HomeDashboardView()
                 case 1: PlantListView()
                 case 2: SymptomCheckerView()
@@ -17,9 +17,12 @@ struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            GTTabBar(selectedTab: $selectedTab)
+            GTTabBar(selectedTab: $router.selectedTab)
         }
         .ignoresSafeArea(edges: .bottom)
+        .onChange(of: router.selectedTab) { _ in
+            router.popToRoot()
+        }
     }
 }
 

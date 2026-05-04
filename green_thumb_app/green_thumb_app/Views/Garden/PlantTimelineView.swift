@@ -11,7 +11,7 @@ struct PlantTimelineView: View {
             ZStack(alignment: .bottom) {
                 Color.gtForestGreen.ignoresSafeArea(edges: .top)
                 
-                VStack(spacing: 24) {
+                VStack(spacing: 25) {
                     // Back and Title
                     HStack {
                         Button { dismiss() } label: {
@@ -65,7 +65,7 @@ struct PlantTimelineView: View {
                             StatCapsule(value: "\(plant.careLogs.filter { $0.statusBadge != nil && $0.statusBadge != "Started tracking" }.count)", label: "Treatments")
                         }
                     }
-                    .padding(.bottom, 32)
+                    .padding(.bottom, 52)
                 }
                 .padding(.horizontal, 24)
             }

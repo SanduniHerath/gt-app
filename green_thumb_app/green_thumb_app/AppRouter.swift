@@ -27,7 +27,7 @@ enum AppRoute: Hashable {
     case careGuide
     case fertiliserGuide
 
-    // Experts
+    // Expert
     case expertProfile(ExpertModel)
     case bookSession(ExpertModel)
     case expertChat(ExpertModel)
@@ -38,6 +38,7 @@ enum AppRoute: Hashable {
 
     // Profile
     case appSettings
+    case notifications
 }
 
 extension PlantModel: Hashable {
@@ -60,6 +61,7 @@ extension CommunityPostModel: Hashable {
 class AppRouter: ObservableObject {
     @Published var path = NavigationPath()
     @Published var showMain: Bool = false
+    @Published var selectedTab: Int = 0
 
     func navigate(to route: AppRoute) { path.append(route) }
     func pop()               { if !path.isEmpty { path.removeLast() } }

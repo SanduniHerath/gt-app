@@ -35,7 +35,7 @@ struct PlantListView: View {
                         Text("My Garden")
                             .font(GTFont.displayMedium())
                             .foregroundColor(.white)
-                            .padding(.top, 40) // Status bar padding
+                            .padding(.top, 80) // Status bar padding
 
                         // Search Bar
                         HStack(spacing: 12) {
@@ -133,6 +133,14 @@ struct PlantListView: View {
                     AddObservationView(plant: plant)
                 case .addPlant:
                     AddPlantView()
+                case .careGuide:
+                    CareGuideView()
+                case .smartScheduler:
+                    SmartSchedulerView()
+                case .diagnosisResult:
+                    DiagnosisResultView()
+                case .notifications:
+                    NotificationsView()
                 default:
                     EmptyView()
                 }

@@ -23,14 +23,14 @@ struct CommunityPostDetailView: View {
                 Spacer()
             }
             .padding(.horizontal, GTSpacing.lg)
-            .padding(.top, 64) // Lowered header as requested
+            .padding(.top, 74) // Lowered header as requested
             .padding(.bottom, GTSpacing.md)
             .background(Color(hex: "E5E5E5"))
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     // Author Row
-                    HStack(spacing: GTSpacing.sm) {
+                    HStack(spacing: GTSpacing.xxxl) {
                         ZStack {
                             Circle()
                                 .fill(Color(hex: post.avatarColorHex ?? "Color.gtDarkGreen"))

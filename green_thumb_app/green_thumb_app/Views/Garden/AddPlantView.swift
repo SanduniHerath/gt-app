@@ -3,6 +3,7 @@ import SwiftUI
 struct AddPlantView: View {
     @StateObject private var viewModel = AddPlantViewModel()
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var router: AppRouter
     
     var body: some View {
         ZStack {
@@ -96,7 +97,10 @@ struct AddPlantView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            viewModel.onSave = { dismiss() }
+            viewModel.onSave = { plant in
+                router.pop()
+                router.navigate(to: .plantDetails(plant))
+            }
             viewModel.onCancel = { dismiss() }
         }
     }

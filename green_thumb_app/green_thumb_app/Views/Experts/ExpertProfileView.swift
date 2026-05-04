@@ -4,15 +4,13 @@ struct ExpertProfileView: View {
     let expert: ExpertModel
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
-    @State private var showChat = false
-    @State private var showBooking = false
 
     var body: some View {
         VStack(spacing: 0) {
             // Header Section
             VStack(spacing: 0) {
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: { router.pop() }) {
                         ZStack {
                             Circle()
                                 .fill(.white)
@@ -76,7 +74,7 @@ struct ExpertProfileView: View {
                 VStack(spacing: GTSpacing.lg) {
                     // Actions
                     HStack(spacing: GTSpacing.md) {
-                        Button(action: { showBooking = true }) {
+                        Button(action: { router.navigate(to: .bookSession(expert)) }) {
                             HStack(spacing: 8) {
                                 Image(systemName: "calendar")
                                 Text("Book session")
@@ -89,7 +87,7 @@ struct ExpertProfileView: View {
                             .cornerRadius(GTRadius.sm)
                         }
                         
-                        Button(action: { showChat = true }) {
+                        Button(action: { router.navigate(to: .expertChat(expert)) }) {
                             HStack(spacing: 8) {
                                 Image(systemName: "bubble.left")
                                 Text("Message")
@@ -165,8 +163,6 @@ struct ExpertProfileView: View {
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $showChat) { ExpertSessionChatView() }
-        .navigationDestination(isPresented: $showBooking) { ExpertBookSessionView(expert: expert) }
     }
     
     private var initials: String {

@@ -13,7 +13,7 @@ struct ExpertBookSessionView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Button(action: { dismiss() }) {
+                Button(action: { router.pop() }) {
                     ZStack {
                         Circle()
                             .fill(.white)
@@ -32,7 +32,7 @@ struct ExpertBookSessionView: View {
                 Spacer()
             }
             .padding(.horizontal, GTSpacing.lg)
-            .padding(.top, 50)
+            .padding(.top, 80)
             
             // Expert Info
             HStack(spacing: GTSpacing.md) {
@@ -89,7 +89,7 @@ struct ExpertBookSessionView: View {
                     
                     // Confirm Button
                     Button(action: {
-                        // Confirm action
+                        router.navigate(to: .notifications)
                     }) {
                         HStack {
                             Spacer()

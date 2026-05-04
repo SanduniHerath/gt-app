@@ -6,9 +6,9 @@ struct GTTabBar: View {
     private let items: [(icon: String, label: String)] = [
         ("house.fill",      "Home"),
         ("leaf.fill",       "My Garden"),
-        ("stethoscope",     "Diagnose"),
-        ("person.2.fill",   "Experts"),
-        ("person.fill",     "Profile"),
+        ("magnifyingglass",  "Diagnose"),
+        ("person.2",        "Experts"),
+        ("person.crop.circle", "Profile"),
     ]
 
     var body: some View {

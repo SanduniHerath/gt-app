@@ -13,7 +13,7 @@ struct SignUpView: View {
                 VStack(alignment: .leading, spacing: GTSpacing.sm) {
                     // Logo row
                     GTLogoHeader(iconSize: 30)
-                        .padding(.top, GTSpacing.lg)
+                        .padding(.top, GTSpacing.xxxl)
 
                     // Welcome text
                     VStack(alignment: .leading, spacing: 4) {
@@ -41,7 +41,7 @@ struct SignUpView: View {
                             options: ["Sign in", "Register"],
                             selectedIndex: $authVM.selectedTab
                         )
-                        .padding(.top, GTSpacing.md)
+                        .padding(.top, GTSpacing.xl)
 
                         if authVM.selectedTab == 0 {
                             // ── Sign in tab ──
@@ -52,6 +52,7 @@ struct SignUpView: View {
                                     text: $authVM.phoneNumber,
                                     keyboardType: .phonePad
                                 )
+                                .padding(.top, GTSpacing.md)
 
                                 // Error message
                                 if let err = authVM.errorMessage {
@@ -60,6 +61,8 @@ struct SignUpView: View {
                                         .foregroundColor(.red)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
+                                
+                                
 
                                 GTButton(
                                     title: "Sign in to my garden",
@@ -69,6 +72,7 @@ struct SignUpView: View {
                                     authVM.sendOTP()
                                     if authVM.errorMessage == nil { goOTP = true }
                                 }
+                                .padding(.top, GTSpacing.lg)
 
                                 GTButton(
                                     title: "Use Face ID",
@@ -77,6 +81,8 @@ struct SignUpView: View {
                                 ) {
                                     authVM.signInWithFaceID()
                                 }
+                                
+                               
 
                                 // Divider
                                 HStack {

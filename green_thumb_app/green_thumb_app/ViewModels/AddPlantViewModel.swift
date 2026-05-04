@@ -16,13 +16,29 @@ class AddPlantViewModel: ObservableObject {
     let potTypeOptions = ["Ground", "Ceramic Pot", "Plastic Pot", "Terracotta", "Raised Bed"]
     
     // Actions
-    var onSave: (() -> Void)?
+    var onSave: ((PlantModel) -> Void)?
     var onCancel: (() -> Void)?
     
     func savePlant() {
         // Logic to save the plant to the repository would go here
+        // Creating a mock plant model to pass to the next view
+        let ageDays = Calendar.current.dateComponents([.day], from: datePlanted, to: Date()).day ?? 0
+        
+        let newPlant = PlantModel(
+            name: name,
+            species: species,
+            status: .healthy,
+            healthScore: 100,
+            imageURL: "plant_rose", // Default or selected image
+            location: location,
+            dateAdded: Date(),
+            tags: tags,
+            isOutdoor: potType == "Ground",
+            ageDays: ageDays
+        )
+        
         print("Saving plant: \(name)")
-        onSave?()
+        onSave?(newPlant)
     }
     
     func addTag() {

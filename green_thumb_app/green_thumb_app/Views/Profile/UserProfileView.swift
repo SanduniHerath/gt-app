@@ -4,6 +4,7 @@ struct UserProfileView: View {
     @EnvironmentObject var profileVM:   ProfileViewModel
     @EnvironmentObject var authVM:      AuthViewModel
     @EnvironmentObject var communityVM: CommunityViewModel
+    @EnvironmentObject var router:      AppRouter
     @State private var showSettings = false
     @State private var selectedTab = 0
 
@@ -14,7 +15,7 @@ struct UserProfileView: View {
                 VStack(alignment: .leading, spacing: GTSpacing.md) {
                     // Top Navigation
                     HStack {
-                        Button { /* Back */ } label: {
+                        Button { router.selectedTab = 0 } label: {
                             Image(systemName: "arrow.left")
                                 .circleButton()
                         }
@@ -36,7 +37,7 @@ struct UserProfileView: View {
                             .foregroundColor(.white)
                             .lineSpacing(-8)
                     }
-                    .padding(.horizontal, GTSpacing.lg)
+                    .padding(.horizontal, 105)
                     .padding(.bottom, selectedTab == 0 ? 0 : 20)
 
                     if selectedTab == 0 {
@@ -56,6 +57,7 @@ struct UserProfileView: View {
                             
                             GTBadgeComponent(text: profileVM.profile.userType)
                         }
+                        .padding(.horizontal, 80)
                         
                         // Stats Row
                         HStack {

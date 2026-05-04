@@ -7,7 +7,7 @@ struct CommunityFeedView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            VStack(spacing: 10) {
                 HStack {
                     Text("Community").font(GTFont.displaySmall()).foregroundColor(.white)
                     Spacer()
@@ -16,7 +16,7 @@ struct CommunityFeedView: View {
                             .font(.system(size: 20, weight: .semibold)).foregroundColor(.white)
                     }
                 }
-                .padding(.horizontal, GTSpacing.lg).padding(.vertical, GTSpacing.md).padding(.top, GTSpacing.sm)
+                .padding(.horizontal, GTSpacing.lg).padding(.vertical, GTSpacing.xxxl).padding(.top, GTSpacing.sm)
                 .background(Color.gtForestGreen)
 
                 ScrollView(showsIndicators: false) {
