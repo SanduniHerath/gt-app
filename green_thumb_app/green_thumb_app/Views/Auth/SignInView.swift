@@ -3,24 +3,34 @@ import SwiftUI
 struct SignInView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @EnvironmentObject var router: AppRouter
-    @State private var goOTP = false
+    @State private var email = ""
+    @State private var password = ""
     
     var body: some View {
         VStack(spacing: 0) {
             GTAuthHeader()
+                .padding(.top, GTSpacing.xxl)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GTSpacing.lg) {
-                    GTSegmentedControl(options: ["Sign in", "Register"], selectedIndex: .constant(0))
-                        .onTapGesture { router.navigate(to: .register) }
-                        .padding(.top, GTSpacing.md)
+                    GTSegmentedControl(options: ["Sign in", "Register"], selectedIndex: .constant(0)) { idx in
+                        if idx == 1 { router.navigate(to: .register) }
+                    }
+                    .padding(.top, GTSpacing.md)
                     
                     VStack(spacing: GTSpacing.md) {
                         GTTextField(
-                            label: "Enter Mobile Number",
-                            placeholder: "07X XXXX XXX",
-                            text: $authVM.phoneNumber,
-                            keyboardType: .phonePad
+                            label: "Enter Email address",
+                            placeholder: "you@gmail.com",
+                            text: $email,
+                            keyboardType: .emailAddress
+                        )
+                        
+                        GTTextField(
+                            label: "Enter Password",
+                            placeholder: "",
+                            text: $password,
+                            isSecure: true
                         )
                         
                         if let err = authVM.errorMessage {
@@ -35,8 +45,7 @@ struct SignInView: View {
                             style: .primary,
                             isLoading: authVM.isLoading
                         ) {
-                            authVM.sendOTP()
-                            if authVM.errorMessage == nil { goOTP = true }
+                            authVM.signIn(email: email, password: password)
                         }
                         
                         GTButton(
@@ -69,7 +78,36 @@ struct SignInView: View {
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $goOTP) { OTPVerificationView() }
+    }
+}
+
+struct SocialButton: View {
+    let label: String
+    let icon: String
+    var iconColor: Color = .gtTextPrimary
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: GTSpacing.xs) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(iconColor)
+                Text(label)
+                    .font(GTFont.labelMedium())
+                    .foregroundColor(.gtTextPrimary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, GTSpacing.sm + 2)
+            .background(
+                RoundedRectangle(cornerRadius: GTRadius.xl)
+                    .fill(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: GTRadius.xl)
+                            .stroke(Color.gtSeparator, lineWidth: 1.5)
+                    )
+            )
+        }
     }
 }
 

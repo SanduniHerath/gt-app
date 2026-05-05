@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
+	<key>CLIENT_ID</key>
+	<string>160151698734-u67faq6fsqu7lgg1r8vps4eiq523cbbu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.160151698734-u67faq6fsqu7lgg1r8vps4eiq523cbbu</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCYHaLQ7MAjJqFulo8rh_irgNZNuXQkM1Q</string>
+	<key>GCM_SENDER_ID</key>
+	<string>160151698734</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sanduni.green-thumb-app</string>
+	<key>PROJECT_ID</key>
+	<string>greenthumb-ios</string>
+	<key>STORAGE_BUCKET</key>
+	<string>greenthumb-ios.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:160151698734:ios:e47d72c9156fd8cd070ebf</string>
+</dict>
+</plist>

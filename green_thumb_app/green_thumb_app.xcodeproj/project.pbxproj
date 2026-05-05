@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FEB0E8042FA90F0800E0D42E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEB0E8032FA90F0800E0D42E /* FirebaseAuth */; };
+		FEB0E8062FA90F0800E0D42E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FEB0E8052FA90F0800E0D42E /* FirebaseFirestore */; };
+		FEB0E8082FA90F0800E0D42E /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = FEB0E8072FA90F0800E0D42E /* FirebaseMessaging */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FEB4FA4D2F8A86E900963CE4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEB0E8082FA90F0800E0D42E /* FirebaseMessaging in Frameworks */,
+				FEB0E8042FA90F0800E0D42E /* FirebaseAuth in Frameworks */,
+				FEB0E8062FA90F0800E0D42E /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +121,9 @@
 			);
 			name = green_thumb_app;
 			packageProductDependencies = (
+				FEB0E8032FA90F0800E0D42E /* FirebaseAuth */,
+				FEB0E8052FA90F0800E0D42E /* FirebaseFirestore */,
+				FEB0E8072FA90F0800E0D42E /* FirebaseMessaging */,
 			);
 			productName = green_thumb_app;
 			productReference = FEB4FA3F2F8A86E600963CE4 /* green_thumb_app.app */;
@@ -195,6 +207,9 @@
 			);
 			mainGroup = FEB4FA362F8A86E600963CE4;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FEB0E8022FA90F0800E0D42E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FEB4FA402F8A86E600963CE4 /* Products */;
 			projectDirPath = "";
@@ -393,10 +408,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = green_thumb_app/green_thumb_app.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "green-thumb-app-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -424,10 +441,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = green_thumb_app/green_thumb_app.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "green-thumb-app-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -570,6 +589,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FEB0E8022FA90F0800E0D42E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FEB0E8032FA90F0800E0D42E /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FEB0E8022FA90F0800E0D42E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		FEB0E8052FA90F0800E0D42E /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FEB0E8022FA90F0800E0D42E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		FEB0E8072FA90F0800E0D42E /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FEB0E8022FA90F0800E0D42E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FEB4FA372F8A86E600963CE4 /* Project object */;
 }

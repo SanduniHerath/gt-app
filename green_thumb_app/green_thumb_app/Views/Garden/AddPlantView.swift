@@ -4,6 +4,7 @@ struct AddPlantView: View {
     @StateObject private var viewModel = AddPlantViewModel()
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
+    @EnvironmentObject var plantVM: PlantViewModel
     
     var body: some View {
         ZStack {
@@ -98,6 +99,7 @@ struct AddPlantView: View {
         .navigationBarHidden(true)
         .onAppear {
             viewModel.onSave = { plant in
+                plantVM.addPlant(plant)
                 router.pop()
                 router.navigate(to: .plantDetails(plant))
             }

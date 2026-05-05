@@ -1,7 +1,13 @@
 import SwiftUI
+import Firebase
 
 @main
 struct green_thumb_appApp: App {
+    
+    init() {
+            FirebaseApp.configure()   // ← add this line
+        }
+    
     @StateObject private var router         = AppRouter()
     @StateObject private var authVM         = AuthViewModel()
     @StateObject private var plantVM        = PlantViewModel()

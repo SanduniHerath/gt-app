@@ -181,8 +181,8 @@ struct SymptomCheckerView: View {
                 switch route {
                 case .diagnosisResult:
                     DiagnosisResultView()
-                case .careGuide:
-                    CareGuideView()
+                case .careGuide(let species):
+                    CareGuideView(speciesName: species)
                 case .bookSession(let expert):
                     ExpertBookSessionView(expert: expert)
                 case .notifications:

@@ -7,7 +7,7 @@ struct SplashScreenView: View {
     @State private var navigateNext    = false
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             ZStack {
                 // Full background
                 Color.gtForestGreen
@@ -57,7 +57,16 @@ struct SplashScreenView: View {
             .navigationDestination(isPresented: $navigateNext) {
                 OnboardingScreen1View()
             }
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .signIn: SignInView()
+                case .register: RegisterView()
+                default: AnyView(EmptyView())
+                }
+            }
         }
+
+
         .onAppear {
             withAnimation(.easeOut(duration: 0.8)) {
                 opacity = 1

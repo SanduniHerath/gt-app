@@ -2,23 +2,32 @@ import SwiftUI
 
 // Inline form used in both RegisterView (standalone) and SignUpView Register tab
 struct RegisterFormView: View {
+    @EnvironmentObject var authVM: AuthViewModel
     @State private var name     = ""
-    @State private var phone    = ""
     @State private var email    = ""
+    @State private var password = ""
 
     var body: some View {
         VStack(spacing: GTSpacing.md) {
             GTTextField(label: "Name", placeholder: "Sanduni Herath", text: $name)
             GTTextField(label: "Email address", placeholder: "you@gmail.com", text: $email, keyboardType: .emailAddress)
-            GTTextField(label: "Phone Number", placeholder: "07X XXXX XXX", text: $phone, keyboardType: .phonePad)
+            GTTextField(label: "Password", placeholder: "........" , text: $password, isSecure: true)
 
-            GTButton(title: "Register to my garden") {
-                // Register action
+            if let err = authVM.errorMessage {
+                Text(err)
+                    .font(GTFont.bodySmall())
+                    .foregroundColor(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            GTButton(title: "Register to my garden", isLoading: authVM.isLoading) {
+                authVM.register(email: email, password: password, name: name)
             }
             .padding(.top, GTSpacing.xs)
         }
     }
 }
+
 
 struct RegisterView: View {
     @EnvironmentObject var authVM: AuthViewModel
@@ -28,12 +37,14 @@ struct RegisterView: View {
     var body: some View {
         VStack(spacing: 0) {
             GTAuthHeader()
+                .padding(.top, GTSpacing.xxl)
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GTSpacing.lg) {
-                    GTSegmentedControl(options: ["Sign in", "Register"], selectedIndex: .constant(1))
-                        .onTapGesture { router.pop() }
-                        .padding(.top, GTSpacing.md)
+                    GTSegmentedControl(options: ["Sign in", "Register"], selectedIndex: .constant(1)) { idx in
+                        if idx == 0 { router.pop() }
+                    }
+                    .padding(.top, GTSpacing.md)
                     
                     RegisterFormView()
                 }

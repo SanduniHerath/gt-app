@@ -163,7 +163,7 @@ struct OnboardingScreen1View: View {
         )
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $goNext) { OnboardingScreen2View() }
-        .navigationDestination(isPresented: $goSkip) { SignUpView() }
+        .navigationDestination(isPresented: $goSkip) { SignInView() }
     }
 }
 
@@ -182,7 +182,7 @@ struct OnboardingScreen2View: View {
             onSkip: { goNext = true }
         )
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $goNext) { SignUpView() }
+        .navigationDestination(isPresented: $goNext) { SignInView() }
     }
 }
 

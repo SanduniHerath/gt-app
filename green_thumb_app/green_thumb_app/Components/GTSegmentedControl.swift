@@ -3,6 +3,8 @@ import SwiftUI
 struct GTSegmentedControl: View {
     let options: [String]
     @Binding var selectedIndex: Int
+    var onChanged: ((Int) -> Void)? = nil
+
     
     var body: some View {
         HStack(spacing: 0) {
@@ -10,6 +12,7 @@ struct GTSegmentedControl: View {
                 Button {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedIndex = idx
+                        onChanged?(idx)
                     }
                 } label: {
                     Text(options[idx])

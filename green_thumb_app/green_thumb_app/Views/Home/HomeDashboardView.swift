@@ -24,6 +24,8 @@ struct HomeDashboardView: View {
                                     .font(GTFont.labelLarge())
                                     .foregroundColor(.white)
                             }
+                        
+
                             Spacer()
                             Button { showNotifications = true } label: {
                                 Image(systemName: "bell.fill")
@@ -123,8 +125,8 @@ struct HomeDashboardView: View {
                     PlantTimelineView(plant: plant)
                 case .addPlant:
                     AddPlantView()
-                case .careGuide:
-                    CareGuideView()
+                case .careGuide(let species):
+                    CareGuideView(speciesName: species)
                 case .diagnosisResult:
                     DiagnosisResultView()
                 case .nearbyExperts:

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "colombo_doa",
+    "name": "Dept. of Agriculture — Colombo",
+    "address": "80/5 Rajamalwatta Road, Battaramulla",
+    "latitude": 6.9022,
+    "longitude": 79.9199,
+    "phone": "+94 11 2034000",
+    "openHours": "Mon–Fri 8:30 AM – 4:30 PM",
+    "isAvailable": true
+  },
+  {
+    "id": "kandy_doa",
+    "name": "Dept. of Agriculture — Kandy",
+    "address": "Peradeniya, Kandy",
+    "latitude": 7.2694,
+    "longitude": 80.5994,
+    "phone": "+94 81 2388236",
+    "openHours": "Mon–Fri 8:30 AM – 4:30 PM",
+    "isAvailable": true
+  },
+  {
+    "id": "galle_doa",
+    "name": "Dept. of Agriculture — Galle",
+    "address": "Karapitiya Road, Galle",
+    "latitude": 6.0535,
+    "longitude": 80.2210,
+    "phone": "+94 91 2222556",
+    "openHours": "Mon–Fri 8:30 AM – 4:30 PM",
+    "isAvailable": true
+  },
+  {
+    "id": "anuradhapura_doa",
+    "name": "Dept. of Agriculture — Anuradhapura",
+    "address": "Maithripala Mawatha, Anuradhapura",
+    "latitude": 8.3114,
+    "longitude": 80.4037,
+    "phone": "+94 25 2222348",
+    "openHours": "Mon–Fri 8:30 AM – 4:30 PM",
+    "isAvailable": true
+  },
+  {
+    "id": "matara_doa",
+    "name": "Dept. of Agriculture — Matara",
+    "address": "Anagarika Dharmapala Mawatha, Matara",
+    "latitude": 5.9549,
+    "longitude": 80.5549,
+    "phone": "+94 41 2222197",
+    "openHours": "Mon–Fri 8:30 AM – 4:30 PM",
+    "isAvailable": true
+  },
+  {
+    "id": "jaffna_doa",
+    "name": "Dept. of Agriculture — Jaffna",
+    "address": "Hospital Road, Jaffna",
+    "latitude": 9.6615,
+    "longitude": 80.0255,
+    "phone": "+94 21 2222133",
+    "openHours": "Mon–Fri 8:30 AM – 4:30 PM",
+    "isAvailable": false
+  }
+]

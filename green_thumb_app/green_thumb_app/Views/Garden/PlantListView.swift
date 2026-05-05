@@ -133,8 +133,8 @@ struct PlantListView: View {
                     AddObservationView(plant: plant)
                 case .addPlant:
                     AddPlantView()
-                case .careGuide:
-                    CareGuideView()
+                case .careGuide(let species):
+                    CareGuideView(speciesName: species)
                 case .smartScheduler:
                     SmartSchedulerView()
                 case .diagnosisResult:

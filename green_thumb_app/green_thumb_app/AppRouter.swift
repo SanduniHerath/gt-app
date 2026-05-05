@@ -24,7 +24,7 @@ enum AppRoute: Hashable {
 
     // Diagnose
     case diagnosisResult
-    case careGuide
+    case careGuide(String)
     case fertiliserGuide
 
     // Expert

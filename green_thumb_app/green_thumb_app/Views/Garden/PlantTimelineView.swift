@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct PlantTimelineView: View {
+    @EnvironmentObject var plantVM: PlantViewModel
     let plant: PlantModel
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
+
+    // Find the latest version of this plant in our real-time array
+    private var livePlant: PlantModel {
+        plantVM.plants.first(where: { $0.id == plant.id }) ?? plant
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,11 +50,11 @@ struct PlantTimelineView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(plant.name)
+                            Text(livePlant.name)
                                 .font(GTFont.displaySmall())
                                 .foregroundColor(.white)
                             
-                            Text("\(plant.location) - Planted")
+                            Text("\(livePlant.location) - Planted")
                                 .font(GTFont.bodySmall())
                                 .foregroundColor(.white.opacity(0.8))
                             
@@ -61,8 +67,8 @@ struct PlantTimelineView: View {
                         
                         // Stat Capsules
                         VStack(spacing: 10) {
-                            StatCapsule(value: "\(plant.ageDays)", label: "days old")
-                            StatCapsule(value: "\(plant.careLogs.filter { $0.statusBadge != nil && $0.statusBadge != "Started tracking" }.count)", label: "Treatments")
+                            StatCapsule(value: "\(livePlant.ageDays)", label: "days old")
+                            StatCapsule(value: "\(livePlant.careLogs.filter { $0.statusBadge != nil && $0.statusBadge != "Started tracking" }.count)", label: "Treatments")
                         }
                     }
                     .padding(.bottom, 52)
@@ -76,12 +82,12 @@ struct PlantTimelineView: View {
                 VStack(spacing: 28) {
                     // Observation Button
                     GTAddObservationButton {
-                        router.navigate(to: .addObservation(plant))
+                        router.navigate(to: .addObservation(livePlant))
                     }
                     .padding(.top, 32)
                     
                     // Timeline
-                    if plant.careLogs.isEmpty {
+                    if livePlant.careLogs.isEmpty {
                         VStack(spacing: 16) {
                             Image(systemName: "leaf.arrow.circlepath")
                                 .font(.system(size: 40))
@@ -98,10 +104,10 @@ struct PlantTimelineView: View {
                         .padding(.top, 40)
                     } else {
                         VStack(spacing: 0) {
-                            ForEach(Array(plant.careLogs.enumerated()), id: \.element.id) { index, entry in
+                            ForEach(Array(livePlant.careLogs.sorted(by: { $0.date > $1.date }).enumerated()), id: \.element.id) { index, entry in
                                 GTHighFidelityTimelineCard(
                                     entry: entry,
-                                    isLast: index == plant.careLogs.count - 1
+                                    isLast: index == livePlant.careLogs.count - 1
                                 )
                             }
                         }

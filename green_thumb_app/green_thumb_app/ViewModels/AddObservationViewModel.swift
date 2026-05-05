@@ -10,11 +10,18 @@ class AddObservationViewModel: ObservableObject {
     @Published var tags: [String]
     @Published var observationNote: String = ""
     
+    // Navigation
+    var onSave: ((PlantModel) -> Void)?
+    var onCancel: (() -> Void)?
+    
+    private var plant: PlantModel?
+    
     init(plant: PlantModel? = nil) {
+        self.plant = plant
         self.selectedPlant = plant?.name ?? "Rose Bush"
         self.species = plant?.species ?? "Rosa hybrida"
         self.location = plant?.location ?? "Front garden"
-        self.potGroundType = plant?.soilType ?? "Ground" // Map soilType to pot/ground for now
+        self.potGroundType = plant?.isOutdoor ?? true ? "Ground" : "Pot"
         self.tags = plant?.tags ?? ["Flowering", "Outdoor", "Fragrant"]
     }
     
@@ -23,16 +30,23 @@ class AddObservationViewModel: ObservableObject {
     let locationOptions = ["Front garden", "Back garden", "Living room", "Balcony"]
     let typeOptions = ["Pot", "Ground", "Hydroponic"]
     let availableTags = ["Flowering", "Outdoor", "Fragrant", "Indoor", "Tropical"]
-    
-    // Navigation
-    var onSave: (() -> Void)?
-    var onCancel: (() -> Void)?
-    
+
     func saveObservation() {
-        // In a real app, this would create a CareLogEntry and save it to the PlantModel
-        print("Saving observation: \(observationNote) for \(selectedPlant)")
-        onSave?()
+        guard var updatedPlant = plant else { return }
+        
+        let newEntry = CareLogEntry(
+            type: .observation,
+            date: Date(),
+            title: "Observation",
+            note: observationNote
+        )
+        
+        updatedPlant.careLogs.append(newEntry)
+        
+        print("Saving observation to Firebase for \(updatedPlant.name)")
+        onSave?(updatedPlant)
     }
+
     
     func addTag() {
         // Logic to show a tag picker or add a custom tag

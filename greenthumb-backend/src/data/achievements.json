@@ -1,0 +1,66 @@
+[
+  {
+    "id": "first_plant",
+    "name": "First Plant",
+    "icon": "leaf.fill",
+    "condition": "Add your first plant to the garden",
+    "unlockCount": 1,
+    "category": "garden"
+  },
+  {
+    "id": "streak_7",
+    "name": "7-Day Streak",
+    "icon": "flame.fill",
+    "condition": "Water your plants 7 days in a row",
+    "unlockCount": 7,
+    "category": "watering"
+  },
+  {
+    "id": "streak_30",
+    "name": "30-Day Streak",
+    "icon": "star.fill",
+    "condition": "Water your plants 30 days in a row",
+    "unlockCount": 30,
+    "category": "watering"
+  },
+  {
+    "id": "first_session",
+    "name": "First Expert Session",
+    "icon": "person.2.fill",
+    "condition": "Book your first expert consultation session",
+    "unlockCount": 1,
+    "category": "sessions"
+  },
+  {
+    "id": "ten_sessions",
+    "name": "10 Sessions",
+    "icon": "rosette",
+    "condition": "Complete 10 expert consultation sessions",
+    "unlockCount": 10,
+    "category": "sessions"
+  },
+  {
+    "id": "diagnosed",
+    "name": "First Diagnosis",
+    "icon": "cross.fill",
+    "condition": "Run your first plant disease diagnosis",
+    "unlockCount": 1,
+    "category": "diagnosis"
+  },
+  {
+    "id": "five_plants",
+    "name": "Growing Collection",
+    "icon": "leaf.arrow.circlepath",
+    "condition": "Add 5 or more plants to your garden",
+    "unlockCount": 5,
+    "category": "garden"
+  },
+  {
+    "id": "community_post",
+    "name": "Community Contributor",
+    "icon": "bubble.left.and.bubble.right.fill",
+    "condition": "Share your first post in the community",
+    "unlockCount": 1,
+    "category": "community"
+  }
+]

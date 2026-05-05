@@ -3,6 +3,7 @@ import SwiftUI
 struct AddObservationView: View {
     @StateObject var viewModel: AddObservationViewModel
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var plantVM: PlantViewModel
 
     init(plant: PlantModel? = nil) {
         _viewModel = StateObject(wrappedValue: AddObservationViewModel(plant: plant))
@@ -108,7 +109,10 @@ struct AddObservationView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            viewModel.onSave = { dismiss() }
+            viewModel.onSave = { updatedPlant in
+                plantVM.updatePlant(updatedPlant)
+                dismiss()
+            }
             viewModel.onCancel = { dismiss() }
         }
     }

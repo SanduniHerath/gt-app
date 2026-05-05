@@ -36,7 +36,7 @@ struct DiagnosisResultView: View {
                                     .font(GTFont.labelMedium())
                                     .foregroundColor(Color.gtDiagnosisText)
                                 
-                                Text("Nitrogen Deficiency")
+                                Text(diagnoseVM.currentResult?.name ?? "Diagnosis complete")
                                     .font(GTFont.displayMedium())
                                     .foregroundColor(Color.gtDiagnosisTitle)
                             }
@@ -57,11 +57,11 @@ struct DiagnosisResultView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Rose Bush – Front garden")
+                                Text("\(diagnoseVM.selectedPlant?.name ?? "Rose Bush") – \(diagnoseVM.selectedPlant?.location ?? "Garden")")
                                     .font(GTFont.labelLarge())
                                     .foregroundColor(.gtTextPrimary)
                                 
-                                Text("Symptoms: yellow leaves, brown spots, slow growth")
+                                Text("Symptoms: \(diagnoseVM.selectedSymptoms.joined(separator: ", "))")
                                     .font(GTFont.bodySmall())
                                     .foregroundColor(.gtTextSecondary)
                                     .lineLimit(2)
@@ -91,42 +91,24 @@ struct DiagnosisResultView: View {
                             .padding(.top, 32)
                         
                         VStack(spacing: 12) {
-                            GTTreatmentStepRow(
-                                number: 1,
-                                title: "Apply nitrogen-rich fertiliser",
-                                description: "Use NPK 20-5-10 or blood meal. Apply 2 tablespoon per liter of water.",
-                                badgeText: "Do within 2 days",
-                                badgeBg: Color.gtBadgeYellowBg,
-                                badgeFg: Color.gtBadgeYellowText
-                            )
-                            
-                            GTTreatmentStepRow(
-                                number: 2,
-                                title: "Adjust watering frequency",
-                                description: "Reduce to every 3 days. Overwatering flushes nitrogen from soil",
-                                badgeText: "Ongoing",
-                                badgeBg: Color.gtBadgeTealBg,
-                                badgeFg: Color.gtBadgeTealText
-                            )
-                            
-                            GTTreatmentStepRow(
-                                number: 3,
-                                title: "Test soil pH",
-                                description: "Nitrogen uptake is best at pH 6.0–7.0. Adjust with limit if too acidic",
-                                badgeText: "Optional",
-                                badgeBg: Color.gtBadgeGreenBg,
-                                badgeFg: Color.gtBadgeGreenText
-                            )
-                            
-                            GTTreatmentStepRow(
-                                number: 4,
-                                title: "Monitor and re-diagnose",
-                                description: "Check for improvement after 7 days. If no change, consult an expert",
-                                badgeText: "7 days later",
-                                badgeBg: Color.gtBadgePurpleBg,
-                                badgeFg: Color.gtBadgePurpleText
-                            )
+                            if let result = diagnoseVM.currentResult {
+                                ForEach(Array(result.treatmentPlan.enumerated()), id: \.element.id) { index, step in
+                                    GTTreatmentStepRow(
+                                        number: index + 1,
+                                        title: step.title,
+                                        description: step.description,
+                                        badgeText: step.badgeText,
+                                        badgeBg: step.badgeType.colors.bg,
+                                        badgeFg: step.badgeType.colors.fg
+                                    )
+                                }
+                            } else {
+                                Text("No treatment plan available.")
+                                    .font(GTFont.bodySmall())
+                                    .foregroundColor(.gtTextSecondary)
+                            }
                         }
+
                         
                         // Action Buttons
                         VStack(spacing: 12) {
@@ -134,7 +116,8 @@ struct DiagnosisResultView: View {
                                 title: "View full care guide",
                                 style: .primary,
                                 action: {
-                                    router.navigate(to: .careGuide)
+                                    let species = diagnoseVM.selectedPlant?.species ?? "Rose Bush"
+                                    router.navigate(to: .careGuide(species))
                                 }
                             )
                             

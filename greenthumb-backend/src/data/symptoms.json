@@ -1,0 +1,17 @@
+[
+  { "id": "yellow_leaves",   "label": "Yellow leaves",    "style": "disease" },
+  { "id": "brown_spots",     "label": "Brown spots",      "style": "disease" },
+  { "id": "wilting",         "label": "Wilting",          "style": "stress"  },
+  { "id": "white_powder",    "label": "White powder",     "style": "disease" },
+  { "id": "sticky_residue",  "label": "Sticky residue",   "style": "stress"  },
+  { "id": "holes_in_leaves", "label": "Holes in leaves",  "style": "stress"  },
+  { "id": "slow_growth",     "label": "Slow growth",      "style": "growth"  },
+  { "id": "root_smell",      "label": "Root smell",       "style": "stress"  },
+  { "id": "black_spots",     "label": "Black spots",      "style": "disease" },
+  { "id": "leaf_curl",       "label": "Leaf curl",        "style": "stress"  },
+  { "id": "rust_spots",      "label": "Rust-coloured spots", "style": "disease" },
+  { "id": "drooping",        "label": "Drooping stems",   "style": "stress"  },
+  { "id": "mushy_roots",     "label": "Mushy roots",      "style": "stress"  },
+  { "id": "pale_leaves",     "label": "Pale/bleached leaves", "style": "growth" },
+  { "id": "tip_burn",        "label": "Leaf tip burn",    "style": "stress"  }
+]

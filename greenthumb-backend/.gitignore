@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Firebase service account key (never commit!)
+serviceAccountKey.json
+*-credentials.json
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+dist/

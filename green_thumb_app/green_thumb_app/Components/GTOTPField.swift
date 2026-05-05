@@ -6,7 +6,7 @@ struct GTOTPField: View {
     @FocusState private var focusedIndex: Int?
 
     var body: some View {
-        HStack(spacing: GTSpacing.md) {
+        HStack(spacing: GTSpacing.xs) {
             ForEach(0..<count, id: \.self) { index in
                 ZStack {
                     RoundedRectangle(cornerRadius: GTRadius.md)
@@ -15,10 +15,10 @@ struct GTOTPField: View {
                             RoundedRectangle(cornerRadius: GTRadius.md)
                                 .stroke(focusedIndex == index ? Color.gtDarkGreen : Color.gtBorder, lineWidth: 2)
                         )
-                        .frame(width: 68, height: 68)
+                        .frame(width: 48, height: 56)
 
                     TextField("", text: $code[index])
-                        .font(.system(size: 28, weight: .semibold, design: .rounded))
+                        .font(.system(size: 24, weight: .semibold, design: .rounded))
                         .foregroundColor(.gtTextPrimary)
                         .multilineTextAlignment(.center)
                         .keyboardType(.numberPad)

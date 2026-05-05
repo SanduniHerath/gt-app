@@ -1,0 +1,80 @@
+[
+  {
+    "id": "npk_20_5_10",
+    "name": "NPK 20-5-10 Fertiliser",
+    "type": "Nitrogen-rich",
+    "form": "Granular",
+    "perLitre": "2 tbsp",
+    "frequencyDays": 14,
+    "application": "Soil drench",
+    "instructions": "Dissolve 2 tablespoons in 1 litre of water. Apply to soil base only. Avoid contact with leaves.",
+    "safeForPlants": ["rosa_hybrida", "solanum_lycopersicum", "capsicum_annuum", "musa_acuminata"],
+    "warnings": ["Wear gloves when handling", "Avoid applying on rainy days", "Keep pets away for 24 hours after application"],
+    "isRecommended": true
+  },
+  {
+    "id": "npk_10_5_5",
+    "name": "NPK 10-5-5 Balanced Fertiliser",
+    "type": "Balanced",
+    "form": "Granular",
+    "perLitre": "1.5 tbsp",
+    "frequencyDays": 14,
+    "application": "Soil top-dress",
+    "instructions": "Sprinkle evenly around the drip line. Water in thoroughly. Do not let granules touch stems.",
+    "safeForPlants": ["rosa_hybrida", "solanum_lycopersicum", "capsicum_annuum", "carica_papaya"],
+    "warnings": ["Do not over-apply — causes salt burn", "Store in dry location"],
+    "isRecommended": true
+  },
+  {
+    "id": "neem_oil",
+    "name": "Neem Oil Concentrate",
+    "type": "Organic pesticide / fungicide",
+    "form": "Liquid",
+    "perLitre": "2 tsp + 2 drops dish soap",
+    "frequencyDays": 7,
+    "application": "Foliar spray",
+    "instructions": "Mix 2 tsp neem oil with a few drops of dish soap in 1 litre of water. Shake well and spray all leaf surfaces including undersides. Apply in the evening to avoid sun scorch.",
+    "safeForPlants": ["rosa_hybrida", "solanum_lycopersicum", "capsicum_annuum", "ocimum_basilicum", "nephrolepis_exaltata"],
+    "warnings": ["Do not apply in direct sunlight", "Avoid spraying on flowers", "Wash hands after use"],
+    "isRecommended": true
+  },
+  {
+    "id": "copper_fungicide",
+    "name": "Copper Hydroxide Fungicide",
+    "type": "Fungicide / Bactericide",
+    "form": "Wettable powder",
+    "perLitre": "3g per litre",
+    "frequencyDays": 7,
+    "application": "Foliar spray and soil drench",
+    "instructions": "Mix 3g powder per litre of water. Apply as a fine spray covering all plant surfaces. Repeat every 7 days until symptoms resolve.",
+    "safeForPlants": ["rosa_hybrida", "solanum_lycopersicum", "capsicum_annuum", "musa_acuminata", "carica_papaya"],
+    "warnings": ["Toxic to fish and aquatic life — do not use near water bodies", "Wear mask and gloves", "Do not apply before rain"],
+    "isRecommended": false
+  },
+  {
+    "id": "liquid_seaweed",
+    "name": "Liquid Seaweed Extract",
+    "type": "Organic biostimulant",
+    "form": "Liquid",
+    "perLitre": "5ml",
+    "frequencyDays": 21,
+    "application": "Foliar spray or soil drench",
+    "instructions": "Dilute 5ml in 1 litre water. Use as foliar spray every 3 weeks or as a soil drench monthly. Excellent for stress recovery.",
+    "safeForPlants": ["nephrolepis_exaltata", "monstera_deliciosa", "spathiphyllum", "epipremnum_aureum", "ocimum_basilicum"],
+    "warnings": ["Very safe — no significant hazards", "Store in cool dark place"],
+    "isRecommended": true
+  },
+  {
+    "id": "potassium_fertiliser",
+    "name": "High-Potassium Fruit Booster",
+    "type": "Potassium-rich",
+    "form": "Liquid",
+    "perLitre": "10ml",
+    "frequencyDays": 14,
+    "application": "Soil drench",
+    "instructions": "Mix 10ml per litre and apply during the fruiting stage. Increases fruit size and sweetness.",
+    "safeForPlants": ["musa_acuminata", "carica_papaya", "solanum_lycopersicum", "capsicum_annuum"],
+    "warnings": ["Do not use during vegetative stage", "Avoid applying on hot days"],
+    "isRecommended": true
+  }
+]

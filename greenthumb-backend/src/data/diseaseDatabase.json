@@ -1,0 +1,264 @@
+[
+  {
+    "id": "nitrogen_deficiency",
+    "name": "Nitrogen Deficiency",
+    "matchingSymptoms": ["yellow_leaves", "slow_growth", "pale_leaves"],
+    "affectedAreas": ["leaves", "whole"],
+    "confidence": 0.87,
+    "severity": "moderate",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Apply nitrogen-rich fertiliser",
+        "description": "Use NPK 20-5-10 or blood meal. Apply 2 tablespoons per litre of water and drench the root zone.",
+        "timing": "Do within 2 days"
+      },
+      {
+        "step": 2,
+        "title": "Adjust watering frequency",
+        "description": "Reduce to every 3 days. Overwatering flushes nitrogen from the soil before roots can absorb it.",
+        "timing": "Ongoing"
+      },
+      {
+        "step": 3,
+        "title": "Test soil pH",
+        "description": "Best nitrogen uptake occurs at pH 6.0–7.0. Adjust with agricultural lime if too acidic.",
+        "timing": "Optional — within 1 week"
+      },
+      {
+        "step": 4,
+        "title": "Monitor and re-diagnose",
+        "description": "New leaves should show greening within 7–10 days. Re-run diagnosis if no improvement.",
+        "timing": "7 days later"
+      }
+    ],
+    "similarConditions": ["iron_chlorosis", "root_rot", "overwatering"]
+  },
+  {
+    "id": "iron_chlorosis",
+    "name": "Iron Chlorosis",
+    "matchingSymptoms": ["yellow_leaves", "pale_leaves", "slow_growth"],
+    "affectedAreas": ["leaves"],
+    "confidence": 0.79,
+    "severity": "mild",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Apply chelated iron",
+        "description": "Use a chelated iron foliar spray or soil drench. Iron EDTA works best at pH < 7.5.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Lower soil pH if alkaline",
+        "description": "Add sulphur or acidifying fertiliser if pH > 7.5. Iron is unavailable above this level.",
+        "timing": "Within 1 week"
+      },
+      {
+        "step": 3,
+        "title": "Avoid overwatering",
+        "description": "Waterlogged soil blocks iron uptake. Ensure good drainage.",
+        "timing": "Ongoing"
+      }
+    ],
+    "similarConditions": ["nitrogen_deficiency", "overwatering"]
+  },
+  {
+    "id": "root_rot",
+    "name": "Root Rot (Phytophthora)",
+    "matchingSymptoms": ["wilting", "root_smell", "mushy_roots", "yellow_leaves", "drooping"],
+    "affectedAreas": ["roots", "stem", "whole"],
+    "confidence": 0.92,
+    "severity": "severe",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Remove from pot and inspect roots",
+        "description": "Carefully unpot the plant. Trim all black/mushy roots with sterilised scissors. Let roots air-dry for 30 minutes.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Treat with fungicide",
+        "description": "Dip roots in a copper-based or mancozeb fungicide solution before repotting.",
+        "timing": "Same day"
+      },
+      {
+        "step": 3,
+        "title": "Repot in fresh well-draining mix",
+        "description": "Use perlite-rich potting mix. Ensure the pot has drainage holes. Do not water for 3–4 days after repotting.",
+        "timing": "Same day"
+      },
+      {
+        "step": 4,
+        "title": "Reduce watering drastically",
+        "description": "Water only when the top 3–4 cm of soil is completely dry. Root rot is always caused by excess moisture.",
+        "timing": "Ongoing"
+      }
+    ],
+    "similarConditions": ["overwatering", "nitrogen_deficiency", "bacterial_wilt"]
+  },
+  {
+    "id": "powdery_mildew",
+    "name": "Powdery Mildew",
+    "matchingSymptoms": ["white_powder", "brown_spots", "slow_growth"],
+    "affectedAreas": ["leaves", "stem", "buds"],
+    "confidence": 0.95,
+    "severity": "moderate",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Remove heavily infected leaves",
+        "description": "Prune and dispose of badly affected leaves. Do not compost — this spreads spores.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Apply baking soda spray",
+        "description": "Mix 1 tsp baking soda + 1 tsp neem oil + 1 litre water. Spray all leaf surfaces every 3 days.",
+        "timing": "Every 3 days for 2 weeks"
+      },
+      {
+        "step": 3,
+        "title": "Improve air circulation",
+        "description": "Space plants further apart. Avoid overhead watering. Mildew thrives in humid, stagnant air.",
+        "timing": "Ongoing"
+      },
+      {
+        "step": 4,
+        "title": "Apply sulphur-based fungicide if severe",
+        "description": "For persistent cases, apply a sulphur-based fungicide per label instructions.",
+        "timing": "If no improvement after 1 week"
+      }
+    ],
+    "similarConditions": ["downy_mildew", "aphid_infestation"]
+  },
+  {
+    "id": "aphid_infestation",
+    "name": "Aphid Infestation",
+    "matchingSymptoms": ["sticky_residue", "leaf_curl", "holes_in_leaves", "slow_growth"],
+    "affectedAreas": ["leaves", "buds", "stem"],
+    "confidence": 0.88,
+    "severity": "mild",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Blast with water",
+        "description": "Use a strong jet of water to dislodge aphid colonies from stems and leaf undersides.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Apply neem oil spray",
+        "description": "Mix 2 tsp neem oil + a few drops of dish soap in 1 litre water. Spray thoroughly, covering leaf undersides.",
+        "timing": "Every 2–3 days for 2 weeks"
+      },
+      {
+        "step": 3,
+        "title": "Introduce natural predators",
+        "description": "Encourage ladybirds or lacewings. Avoid broad-spectrum pesticides that kill beneficial insects.",
+        "timing": "Optional long-term"
+      }
+    ],
+    "similarConditions": ["powdery_mildew", "scale_insects"]
+  },
+  {
+    "id": "overwatering",
+    "name": "Overwatering Stress",
+    "matchingSymptoms": ["wilting", "yellow_leaves", "root_smell", "drooping"],
+    "affectedAreas": ["roots", "leaves", "whole"],
+    "confidence": 0.84,
+    "severity": "moderate",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Stop watering immediately",
+        "description": "Allow soil to dry completely before next watering. Check by inserting a finger 3 cm into soil.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Improve drainage",
+        "description": "Ensure pot has drainage holes. Consider adding perlite or coarse sand to the soil mix.",
+        "timing": "Within 2 days"
+      },
+      {
+        "step": 3,
+        "title": "Move to brighter location",
+        "description": "More light increases transpiration and helps dry out the root zone faster.",
+        "timing": "Within 1 day"
+      },
+      {
+        "step": 4,
+        "title": "Monitor recovery",
+        "description": "Yellowing should stop within 5–7 days. New growth indicates recovery.",
+        "timing": "1 week"
+      }
+    ],
+    "similarConditions": ["root_rot", "nitrogen_deficiency"]
+  },
+  {
+    "id": "leaf_blight",
+    "name": "Leaf Blight (Alternaria)",
+    "matchingSymptoms": ["brown_spots", "black_spots", "yellow_leaves", "tip_burn"],
+    "affectedAreas": ["leaves", "stem"],
+    "confidence": 0.81,
+    "severity": "moderate",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Remove infected leaves",
+        "description": "Prune all visibly blighted leaves. Sterilise pruning tools with 70% alcohol between cuts.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Apply copper fungicide",
+        "description": "Spray copper-based fungicide every 7 days. Coat all leaf surfaces, especially undersides.",
+        "timing": "Every 7 days for 3 weeks"
+      },
+      {
+        "step": 3,
+        "title": "Water at the base only",
+        "description": "Wet foliage promotes Alternaria spread. Use drip irrigation or water directly at the soil level.",
+        "timing": "Ongoing"
+      }
+    ],
+    "similarConditions": ["powdery_mildew", "bacterial_wilt", "root_rot"]
+  },
+  {
+    "id": "bacterial_wilt",
+    "name": "Bacterial Wilt",
+    "matchingSymptoms": ["wilting", "drooping", "brown_spots", "slow_growth"],
+    "affectedAreas": ["stem", "whole", "roots"],
+    "confidence": 0.76,
+    "severity": "severe",
+    "treatmentSteps": [
+      {
+        "step": 1,
+        "title": "Isolate the plant",
+        "description": "Immediately move the plant away from other plants to prevent spread via soil or insects.",
+        "timing": "Immediately"
+      },
+      {
+        "step": 2,
+        "title": "Apply copper bactericide",
+        "description": "Drench the soil with copper hydroxide bactericide. Apply as a foliar spray on stems.",
+        "timing": "Immediately and repeat after 5 days"
+      },
+      {
+        "step": 3,
+        "title": "Improve soil drainage",
+        "description": "Bacterial wilt spreads rapidly in waterlogged soil. Improve drainage immediately.",
+        "timing": "Within 1 day"
+      },
+      {
+        "step": 4,
+        "title": "Consider removal if severe",
+        "description": "If more than 50% of the plant is wilted, removal and replacement may be necessary to protect nearby plants.",
+        "timing": "If no improvement in 5 days"
+      }
+    ],
+    "similarConditions": ["root_rot", "overwatering", "leaf_blight"]
+  }
+]
