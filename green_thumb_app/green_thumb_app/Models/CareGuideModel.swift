@@ -3,12 +3,37 @@ import Foundation
 struct CareGuide: Identifiable, Codable {
     var id: String { speciesName }
     let speciesName: String
-    let wateringSchedule: String
-    let wateringAmount: String
-    let wateringFrequency: String
-    let wateringTips: [String]
-    let fertilizerInfo: String
-    let fertilizerFrequency: String
-    let safetyTips: [String]
-    let seasonalCalendar: [Int] // 12 integers representing intensity/frequency per month
+    let watering: WateringInfo
+    let sunlight: SunlightInfo
+    let soil: SoilInfo
+    let fertiliser: FertiliserInfo
+    let pruning: PruningInfo
+}
+
+struct WateringInfo: Codable {
+    let schedule: String
+    let amount: String
+    let tips: [String]
+    let seasonalCalendar: [String: String]
+}
+
+struct SunlightInfo: Codable {
+    let requirement: String
+    let tips: [String]
+}
+
+struct SoilInfo: Codable {
+    let type: String
+    let tips: [String]
+}
+
+struct FertiliserInfo: Codable {
+    let product: String
+    let frequency: String
+    let tips: [String]
+}
+
+struct PruningInfo: Codable {
+    let frequency: String
+    let tips: [String]
 }

@@ -2,8 +2,11 @@ import SwiftUI
 
 struct SmartSchedulerView: View {
     @EnvironmentObject var router: AppRouter
-    @State private var currentAppTab = 1 // My Garden tab is active in the screenshot
-    @State private var completedTaskIds: Set<String> = ["task_tomatoes"] // Tomatoes starts as done
+    @StateObject private var viewModel = SchedulerViewModel()
+    @State private var selectedDate = Date()
+    
+    // Optional plantId filter
+    var plantId: String?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -38,51 +41,48 @@ struct SmartSchedulerView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     // Calendar
-                    GTCalendarCard()
-                        .padding(.top, 8)
+                    GTCalendarCard(
+                        selectedDate: $selectedDate,
+                        taskDates: viewModel.tasks.map { $0.dueDate }
+                    )
+                    .padding(.top, 8)
                     
                     // Tasks Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Tasks – Today")
+                        Text(Calendar.current.isDateInToday(selectedDate) ? "Tasks – Today" : "Tasks – \(selectedDate.formatted(date: .abbreviated, time: .omitted))")
                             .font(GTFont.labelLarge())
                             .foregroundColor(.gtTextPrimary)
                         
-                        VStack(spacing: 12) {
-                            GTSchedulerTaskRow(
-                                title: "Water Tomatoes",
-                                subtitle: "Back garden – 250ml",
-                                time: "Done",
-                                frequency: "",
-                                iconName: "shield.fill",
-                                iconBgColor: Color.gtBadgeGreenBg,
-                                iconColor: Color.gtBadgeGreenText,
-                                isDone: completedTaskIds.contains("task_tomatoes"),
-                                onTap: { toggleTask("task_tomatoes") }
-                            )
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                        } else {
+                            let dayTasks = viewModel.tasks(for: selectedDate)
                             
-                            GTSchedulerTaskRow(
-                                title: "Water Rose Bush",
-                                subtitle: "Front garden – 300ml",
-                                time: "2.00 PM",
-                                frequency: "Every 2 days",
-                                iconName: "drop.fill",
-                                iconBgColor: Color.gtBadgeTealBg,
-                                iconColor: Color.gtBadgeTealText,
-                                isDone: completedTaskIds.contains("task_rose"),
-                                onTap: { toggleTask("task_rose") }
-                            )
-                            
-                            GTSchedulerTaskRow(
-                                title: "Fertilise Basil",
-                                subtitle: "Balcony pot – NPK 10–10–10",
-                                time: "5.00 PM",
-                                frequency: "Every 14 days",
-                                iconName: "square.grid.2x2.fill",
-                                iconBgColor: Color.gtBadgeYellowBg,
-                                iconColor: Color.gtBadgeYellowText,
-                                isDone: completedTaskIds.contains("task_basil"),
-                                onTap: { toggleTask("task_basil") }
-                            )
+                            if dayTasks.isEmpty {
+                                Text("No tasks scheduled for this day.")
+                                    .font(GTFont.bodySmall())
+                                    .foregroundColor(.gtTextSecondary)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .padding(.top, 20)
+                            } else {
+                                VStack(spacing: 12) {
+                                    ForEach(dayTasks) { task in
+                                        GTSchedulerTaskRow(
+                                            title: "\(task.taskType.rawValue) \(task.plantName)",
+                                            subtitle: task.notes ?? "Regular maintenance",
+                                            time: task.isCompleted ? "Done" : task.dueDate.formatted(date: .omitted, time: .shortened),
+                                            frequency: "", // Can add this to model later
+                                            iconName: iconForType(task.taskType),
+                                            iconBgColor: bgColorForType(task.taskType),
+                                            iconColor: colorForType(task.taskType),
+                                            isDone: task.isCompleted,
+                                            onTap: { viewModel.toggleTask(task) }
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                     
@@ -91,17 +91,38 @@ struct SmartSchedulerView: View {
                 .padding(24)
             }
             .background(Color.gtTreatmentBg)
-            
         }
         .navigationBarHidden(true)
         .background(Color.gtForestGreen.ignoresSafeArea())
+        .onAppear {
+            viewModel.fetchTasks(for: plantId)
+        }
     }
     
-    private func toggleTask(_ id: String) {
-        if completedTaskIds.contains(id) {
-            completedTaskIds.remove(id)
-        } else {
-            completedTaskIds.insert(id)
+    private func iconForType(_ type: TaskType) -> String {
+        switch type {
+        case .water: return "drop.fill"
+        case .fertilize: return "shield.fill"
+        case .repot: return "leaf.fill"
+        default: return "info.circle.fill"
+        }
+    }
+    
+    private func bgColorForType(_ type: TaskType) -> Color {
+        switch type {
+        case .water: return Color.gtBadgeTealBg
+        case .fertilize: return Color.gtBadgeGreenBg
+        case .repot: return Color.gtBadgeYellowBg
+        default: return Color.gtBadgeTealBg
+        }
+    }
+    
+    private func colorForType(_ type: TaskType) -> Color {
+        switch type {
+        case .water: return Color.gtBadgeTealText
+        case .fertilize: return Color.gtBadgeGreenText
+        case .repot: return Color.gtBadgeYellowText
+        default: return Color.gtBadgeTealText
         }
     }
 }

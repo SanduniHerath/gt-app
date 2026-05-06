@@ -21,19 +21,31 @@ enum TaskType: String, Codable, CaseIterable {
 }
 
 struct SchedulerTaskModel: Identifiable, Codable {
-    let id: UUID
-    var plantId: UUID
+    let id: String
+    var userId: String
+    var plantId: String
     var plantName: String
     var taskType: TaskType
     var dueDate: Date
     var isCompleted: Bool
     var notes: String?
 
-    init(id: UUID = .init(), plantId: UUID = .init(), plantName: String,
-         taskType: TaskType, dueDate: Date, isCompleted: Bool = false, notes: String? = nil) {
-        self.id = id; self.plantId = plantId; self.plantName = plantName
-        self.taskType = taskType; self.dueDate = dueDate
-        self.isCompleted = isCompleted; self.notes = notes
+    init(id: String = UUID().uuidString, 
+         userId: String = "",
+         plantId: String = "", 
+         plantName: String,
+         taskType: TaskType, 
+         dueDate: Date, 
+         isCompleted: Bool = false, 
+         notes: String? = nil) {
+        self.id = id
+        self.userId = userId
+        self.plantId = plantId
+        self.plantName = plantName
+        self.taskType = taskType
+        self.dueDate = dueDate
+        self.isCompleted = isCompleted
+        self.notes = notes
     }
 }
 

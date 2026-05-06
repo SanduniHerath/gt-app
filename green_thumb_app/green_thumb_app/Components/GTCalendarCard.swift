@@ -1,49 +1,40 @@
 import SwiftUI
 
 struct GTCalendarCard: View {
+    @Binding var selectedDate: Date
+    let taskDates: [Date] // Dates that should have a blue dot
     let days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
-    let dates = Array(1...30) // Simplified for April 2026
+    
+    // Logic for May 2026
+    private var monthName: String {
+        selectedDate.formatted(.dateTime.month(.wide).year())
+    }
+    
+    private var dates: [Int] { Array(1...31) }
+    private var startOffset: Int { 5 }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // Month Header
             HStack {
-                Text("April 2026")
+                Text(monthName)
                     .font(GTFont.labelLarge())
                     .foregroundColor(.gtTextPrimary)
                 
                 Spacer()
                 
                 HStack(spacing: 8) {
-                    Button(action: {}) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 32, height: 32)
-                                .gtShadow(GTShadow.card)
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.gtTextPrimary)
-                        }
+                    Button(action: { changeMonth(by: -1) }) {
+                        calendarNavButton(icon: "chevron.left")
                     }
-                    
-                    Button(action: {}) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 32, height: 32)
-                                .gtShadow(GTShadow.card)
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.gtTextPrimary)
-                        }
+                    Button(action: { changeMonth(by: 1) }) {
+                        calendarNavButton(icon: "chevron.right")
                     }
                 }
             }
             
             // Calendar Content
             VStack(spacing: 16) {
-                // Days Row
                 HStack(spacing: 0) {
                     ForEach(days, id: \.self) { day in
                         Text(day)
@@ -53,60 +44,82 @@ struct GTCalendarCard: View {
                     }
                 }
                 
-                // Dates Grid
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 8) {
-                    // Offset for April 2026 starting on Wednesday
-                    ForEach(0..<3, id: \.self) { _ in
-                        Text("")
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 36)
+                    ForEach(0..<startOffset, id: \.self) { _ in
+                        Text("").frame(height: 36)
                     }
                     
                     ForEach(dates, id: \.self) { date in
-                        let isToday = (date == 3)
-                        let isTaskDay = (date == 8 || date == 24)
+                        let isSelected = Calendar.current.component(.day, from: selectedDate) == date
+                        let isToday = Calendar.current.isDateInToday(selectedDate) && Calendar.current.component(.day, from: Date()) == date
+                        let hasTask = hasTaskOn(day: date)
                         
-                        Text("\(date)")
-                            .font(GTFont.bodyMedium())
-                            .foregroundColor(isToday ? .white : .gtTextPrimary)
-                            .frame(width: 40, height: 40)
-                            .background(
-                                Group {
-                                    if isToday {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.gtDarkGreen)
-                                    } else if isTaskDay {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.gtBadgeTealBg)
-                                    }
-                                }
-                            )
-                            .frame(maxWidth: .infinity)
+                        VStack(spacing: 4) {
+                            Text("\(date)")
+                                .font(GTFont.bodyMedium())
+                                .foregroundColor(isSelected ? .white : .gtTextPrimary)
+                                .frame(width: 36, height: 36)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(isSelected ? Color.gtDarkGreen : (isToday ? Color.gtDarkGreen.opacity(0.1) : Color.clear))
+                                )
+                            
+                            // Task Indicator Dot
+                            Circle()
+                                .fill(hasTask ? Color.gtBadgeTealBg : Color.clear)
+                                .frame(width: 4, height: 4)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .onTapGesture {
+                            updateSelectedDate(day: date)
+                        }
                     }
                 }
             }
             
-            // Legend
             HStack(spacing: 6) {
-                Circle()
-                    .fill(Color.gtBadgeTealBg)
-                    .frame(width: 8, height: 8)
-                Text("Watering")
-                    .font(GTFont.bodySmall())
-                    .foregroundColor(Color.gtTextMuted)
+                Circle().fill(Color.gtBadgeTealBg).frame(width: 8, height: 8)
+                Text("Scheduled Tasks").font(GTFont.bodySmall()).foregroundColor(Color.gtTextMuted)
             }
         }
         .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white)
-                .gtShadow(GTShadow.card)
-        )
+        .background(RoundedRectangle(cornerRadius: 24).fill(Color.white).gtShadow(GTShadow.card))
+    }
+    
+    private func hasTaskOn(day: Int) -> Bool {
+        taskDates.contains { date in
+            let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            let currentMonthComponents = Calendar.current.dateComponents([.year, .month], from: selectedDate)
+            return components.year == currentMonthComponents.year && 
+                   components.month == currentMonthComponents.month && 
+                   components.day == day
+        }
+    }
+    
+    private func calendarNavButton(icon: String) -> some View {
+        ZStack {
+            Circle().fill(Color.white).frame(width: 32, height: 32).gtShadow(GTShadow.card)
+            Image(systemName: icon).font(.system(size: 14, weight: .bold)).foregroundColor(.gtTextPrimary)
+        }
+    }
+    
+    private func updateSelectedDate(day: Int) {
+        var components = Calendar.current.dateComponents([.year, .month], from: selectedDate)
+        components.day = day
+        if let newDate = Calendar.current.date(from: components) {
+            selectedDate = newDate
+        }
+    }
+    
+    private func changeMonth(by amount: Int) {
+        if let newDate = Calendar.current.date(byAdding: .month, value: amount, to: selectedDate) {
+            selectedDate = newDate
+        }
     }
 }
 
 #Preview {
-    GTCalendarCard()
+    GTCalendarCard(selectedDate: .constant(Date()), taskDates: [])
         .padding()
         .background(Color.gtTreatmentBg)
 }

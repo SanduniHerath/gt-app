@@ -5,6 +5,7 @@ struct CareGuideView: View {
     @EnvironmentObject var router: AppRouter
     @StateObject private var viewModel = CareGuideViewModel()
     @State private var selectedTab = 0 
+    let tabOptions = ["Watering", "Care", "Fertiliser"]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,7 +41,7 @@ struct CareGuideView: View {
                 .padding(.horizontal, 24)
             }
             
-            GTSegmentedTab(options: ["Watering", "Fertiliser"], selectedIndex: $selectedTab)
+            GTSegmentedTab(options: tabOptions, selectedIndex: $selectedTab)
             
             if viewModel.isLoading {
                 Spacer()
@@ -49,20 +50,27 @@ struct CareGuideView: View {
                 Spacer()
             } else if let guide = viewModel.careGuide {
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        if selectedTab == 0 {
-                            WateringTabContent(guide: guide)
-                        } else {
-                            FertiliserTabContent(guide: guide)
+                    VStack(alignment: .leading, spacing: 20) {
+                        Group {
+                            if selectedTab == 0 {
+                                WateringTabContent(guide: guide)
+                            } else if selectedTab == 1 {
+                                CareTabContent(guide: guide)
+                            } else {
+                                FertiliserTabContent(guide: guide)
+                            }
                         }
-                        Spacer(minLength: 40)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                        
+                        Spacer(minLength: 100)
                     }
-                    .padding(24)
-                    .background(Color.gtTreatmentBg)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
                 }
+                .background(Color.gtTreatmentBg)
             } else {
                 Spacer()
-                Text(viewModel.errorMessage ?? "Could not load care guide")
+                Text(viewModel.errorMessage ?? "No care guide found for \(speciesName)")
                     .foregroundColor(.gtTextSecondary)
                 Spacer()
             }
@@ -104,22 +112,16 @@ struct WateringTabContent: View {
                     }
                 }
                 
-                Text(guide.wateringSchedule)
+                Text(guide.watering.schedule)
                     .font(GTFont.bodySmall())
                     .foregroundColor(.gtTextSecondary)
                     .lineSpacing(2)
                 
                 HStack(spacing: 12) {
                     GTStatusBadge(
-                        text: guide.wateringAmount,
+                        text: guide.watering.amount,
                         backgroundColor: Color.gtBadgeTealBg,
                         foregroundColor: Color.gtBadgeTealText
-                    )
-                    
-                    GTStatusBadge(
-                        text: "Check soil first",
-                        backgroundColor: Color.gtBadgeGreenBg,
-                        foregroundColor: Color.gtBadgeGreenText
                     )
                 }
             }
@@ -128,6 +130,40 @@ struct WateringTabContent: View {
             .background(RoundedRectangle(cornerRadius: 24).fill(Color.white))
             .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.gtBorder, lineWidth: 1.5))
             
+            // MARK: - Seasonal Calendar Card
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 16) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.gtBadgeYellowBg)
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "calendar")
+                            .foregroundColor(Color.gtBadgeYellowText)
+                            .font(.system(size: 20))
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Seasonal calendar")
+                            .font(GTFont.labelLarge())
+                            .foregroundColor(.gtTextPrimary)
+                        Text("Watering frequency by month")
+                            .font(GTFont.bodySmall())
+                            .foregroundColor(.gtTextSecondary)
+                    }
+                }
+                
+                GTSeasonalCalendar(data: guide.watering.seasonalCalendar)
+            }
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color.white)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(Color.gtBorder, lineWidth: 1.5)
+            )
+            
             // Tips
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 16) {
@@ -135,7 +171,7 @@ struct WateringTabContent: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color.gtBadgeTealBg)
                             .frame(width: 48, height: 48)
-                        Image(systemName: "drop.fill")
+                        Image(systemName: "info.circle.fill")
                             .foregroundColor(Color.gtBadgeTealText)
                             .font(.system(size: 20))
                     }
@@ -145,8 +181,9 @@ struct WateringTabContent: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 12) {
-                    ForEach(guide.wateringTips, id: \.self) { tip in
-                        WateringTipRow(text: tip)
+                    let tips = guide.watering.tips
+                    ForEach(0..<tips.count, id: \.self) { index in
+                        WateringTipRow(text: tips[index])
                     }
                 }
             }
@@ -158,35 +195,119 @@ struct WateringTabContent: View {
     }
 }
 
-struct FertiliserTabContent: View {
+struct CareTabContent: View {
     let guide: CareGuide
     
     var body: some View {
         VStack(spacing: 20) {
-            GTSafetyCard(
-                title: "Safety first",
-                points: guide.safetyTips
-            )
-            
+            // Sunlight
             VStack(alignment: .leading, spacing: 16) {
-                Text("Fertilizer Guide")
-                    .font(GTFont.labelLarge())
-                    .foregroundColor(.gtTextPrimary)
-                
-                Text(guide.fertilizerInfo)
+                HStack(spacing: 16) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.orange.opacity(0.1))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "sun.max.fill")
+                            .foregroundColor(.orange)
+                            .font(.system(size: 20))
+                    }
+                    Text("Sunlight")
+                        .font(GTFont.labelLarge())
+                        .foregroundColor(.gtTextPrimary)
+                }
+                Text(guide.sunlight.requirement)
                     .font(GTFont.bodySmall())
                     .foregroundColor(.gtTextSecondary)
                 
-                GTStatusBadge(
-                    text: guide.fertilizerFrequency,
-                    backgroundColor: Color.gtBadgeYellowBg,
-                    foregroundColor: Color.gtBadgeYellowText
-                )
+                VStack(alignment: .leading, spacing: 8) {
+                    let tips = guide.sunlight.tips
+                    ForEach(0..<tips.count, id: \.self) { index in
+                        WateringTipRow(text: tips[index])
+                    }
+                }
+            }
+            .padding(20)
+            .background(RoundedRectangle(cornerRadius: 24).fill(Color.white))
+            .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.gtBorder, lineWidth: 1.5))
+            
+            // Soil
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 16) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.brown.opacity(0.1))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "leaf.fill")
+                            .foregroundColor(.brown)
+                            .font(.system(size: 20))
+                    }
+                    Text("Soil & Environment")
+                        .font(GTFont.labelLarge())
+                        .foregroundColor(.gtTextPrimary)
+                }
+                Text(guide.soil.type)
+                    .font(GTFont.bodySmall())
+                    .foregroundColor(.gtTextSecondary)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    let tips = guide.soil.tips
+                    ForEach(0..<tips.count, id: \.self) { index in
+                        WateringTipRow(text: tips[index])
+                    }
+                }
+            }
+            .padding(20)
+            .background(RoundedRectangle(cornerRadius: 24).fill(Color.white))
+            .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.gtBorder, lineWidth: 1.5))
+            
+            // Pruning
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 16) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.gtDarkGreen.opacity(0.1))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "scissors")
+                            .foregroundColor(Color.gtDarkGreen)
+                            .font(.system(size: 20))
+                    }
+                    Text("Pruning")
+                        .font(GTFont.labelLarge())
+                        .foregroundColor(.gtTextPrimary)
+                }
+                Text(guide.pruning.frequency)
+                    .font(GTFont.bodySmall())
+                    .foregroundColor(.gtTextSecondary)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    let tips = guide.pruning.tips
+                    ForEach(0..<tips.count, id: \.self) { index in
+                        WateringTipRow(text: tips[index])
+                    }
+                }
             }
             .padding(20)
             .background(RoundedRectangle(cornerRadius: 24).fill(Color.white))
             .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.gtBorder, lineWidth: 1.5))
         }
+    }
+}
+
+struct FertiliserTabContent: View {
+    let guide: CareGuide
+    
+    var body: some View {
+        let frequencyRaw = guide.fertiliser.frequency
+        // Extract the number from the string (e.g., "14" from "Every 14 days...")
+        let number = frequencyRaw.components(separatedBy: CharacterSet.decimalDigits.inverted).filter { !$0.isEmpty }.first ?? "14"
+        let shortFrequency = "\(number)d"
+        
+        GTFertiliserCard(
+            product: guide.fertiliser.product,
+            frequency: shortFrequency,
+            instructions: "\(frequencyRaw). \(guide.fertiliser.tips.first ?? "")",
+            tips: Array(guide.fertiliser.tips.dropFirst())
+        )
     }
 }
 

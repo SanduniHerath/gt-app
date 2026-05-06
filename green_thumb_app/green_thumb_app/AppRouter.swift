@@ -20,7 +20,7 @@ enum AppRoute: Hashable {
     case addPlant
     case growthTimeline(PlantModel)
     case addObservation(PlantModel)
-    case smartScheduler
+    case smartScheduler(plantId: String? = nil)
 
     // Diagnose
     case diagnosisResult

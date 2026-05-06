@@ -133,6 +133,8 @@ struct HomeDashboardView: View {
                     NearbyExpertsMapView()
                 case .notifications:
                     NotificationsView()
+                case .smartScheduler(let plantId):
+                    SmartSchedulerView(plantId: plantId)
                 default:
                     EmptyView()
                 }

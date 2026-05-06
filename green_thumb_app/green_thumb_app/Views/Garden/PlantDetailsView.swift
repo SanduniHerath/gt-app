@@ -115,7 +115,7 @@ struct PlantDetailsView: View {
                                 router.navigate(to: .careGuide(plant.species))
                             }
                             GTDetailActionButton(icon: "calendar.badge.clock", label: "Schedule", color: .orange) {
-                                router.navigate(to: .smartScheduler)
+                                router.navigate(to: .smartScheduler(plantId: plant.id.uuidString))
                             }
                         }
                         .padding(.vertical, 18)
