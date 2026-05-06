@@ -29,5 +29,15 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Green Thumb uses your location to find nearby agricultural offices and show directions.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Green Thumb uses your location to find nearby agricultural offices and show directions.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Green Thumb uses Face ID to provide secure and convenient access to your garden dashboard.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Green Thumb needs access to your calendar to schedule expert sessions.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Green Thumb needs access to Reminders to help you track plant care tasks.</string>
 </dict>
 </plist>

@@ -4,10 +4,7 @@ import Combine
 @MainActor
 class NotificationsViewModel: ObservableObject {
     @Published var notifications: [NotificationModel] = [
-        NotificationModel(type: .watering,    title: "Time to Water",      message: "Monstera needs watering today."),
-        NotificationModel(type: .fertilizing, title: "Fertilise Due",      message: "Peace Lily fertilisation is overdue."),
-        NotificationModel(type: .expert,      title: "Session Confirmed",  message: "Dr. Sarah confirmed your session for tomorrow.", isRead: true),
-        NotificationModel(type: .community,   title: "New Reply",          message: "Alice replied to your post about fungus gnats."),
+        NotificationModel(type: .community,   title: "Welcome to Green Thumb", message: "Start by adding your first plant or exploring experts!"),
     ]
     var unreadCount: Int { notifications.filter { !$0.isRead }.count }
     func markAllRead() { notifications = notifications.map { var n = $0; n.isRead = true; return n } }
@@ -15,5 +12,10 @@ class NotificationsViewModel: ObservableObject {
         if let idx = notifications.firstIndex(where: { $0.id == notification.id }) {
             notifications[idx].isRead = true
         }
+    }
+    
+    func addNotification(type: NotificationType, title: String, message: String) {
+        let newNotification = NotificationModel(type: type, title: title, message: message)
+        notifications.insert(newNotification, at: 0)
     }
 }

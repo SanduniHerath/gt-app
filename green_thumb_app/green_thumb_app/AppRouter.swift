@@ -23,6 +23,7 @@ enum AppRoute: Hashable {
     case smartScheduler(plantId: String? = nil)
 
     // Diagnose
+    case symptomChecker
     case diagnosisResult
     case careGuide(String)
     case fertiliserGuide

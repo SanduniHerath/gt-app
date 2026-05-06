@@ -45,6 +45,7 @@ struct SignInView: View {
                             style: .primary,
                             isLoading: authVM.isLoading
                         ) {
+                            router.selectedTab = 0 // 🏠 Reset to Home tab
                             authVM.signIn(email: email, password: password)
                         }
                         
@@ -53,6 +54,7 @@ struct SignInView: View {
                             icon: "faceid",
                             style: .primary
                         ) {
+                            router.selectedTab = 0 // 🏠 Reset to Home tab
                             authVM.signInWithFaceID()
                         }
                         

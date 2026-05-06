@@ -3,6 +3,7 @@ import SwiftUI
 // Inline form used in both RegisterView (standalone) and SignUpView Register tab
 struct RegisterFormView: View {
     @EnvironmentObject var authVM: AuthViewModel
+    @EnvironmentObject var router: AppRouter
     @State private var name     = ""
     @State private var email    = ""
     @State private var password = ""
@@ -21,6 +22,7 @@ struct RegisterFormView: View {
             }
 
             GTButton(title: "Register to my garden", isLoading: authVM.isLoading) {
+                router.selectedTab = 0 // 🏠 Reset to Home tab
                 authVM.register(email: email, password: password, name: name)
             }
             .padding(.top, GTSpacing.xs)

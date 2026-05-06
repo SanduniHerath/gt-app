@@ -71,6 +71,7 @@ struct PlantModel: Identifiable, Codable {
     var sunlight: String
     var soilType: String
     var ageDays: Int
+    var initialNote: String?
 
     init(
         id: UUID = .init(),
@@ -91,7 +92,8 @@ struct PlantModel: Identifiable, Codable {
         dailyWater: String = "Unknown",
         sunlight: String = "Unknown",
         soilType: String = "Unknown",
-        ageDays: Int = 0
+        ageDays: Int = 0,
+        initialNote: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -112,20 +114,42 @@ struct PlantModel: Identifiable, Codable {
         self.sunlight = sunlight
         self.soilType = soilType
         self.ageDays = ageDays
+        self.initialNote = initialNote
+    }
+}
+
+extension PlantModel {
+    var calculatedAge: String {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        // Use startOfDay to compare full calendar days
+        let startOfPlanting = calendar.startOfDay(for: dateAdded)
+        let startOfNow = calendar.startOfDay(for: now)
+        
+        let components = calendar.dateComponents([.day, .month, .year], from: startOfPlanting, to: startOfNow)
+        
+        if let year = components.year, year > 0 {
+            return "\(year)y \(components.month ?? 0)m"
+        } else if let month = components.month, month > 0 {
+            return "\(month)m \(components.day ?? 0)d"
+        } else {
+            let days = components.day ?? 0
+            return "\(days) \(days == 1 ? "day" : "days")"
+        }
     }
 }
 
 // MARK: - Sample Data
 extension PlantModel {
     static let samples: [PlantModel] = [
-        PlantModel(name: "Tomatoes", species: "Solanum lycopersicum", status: .healthy, healthScore: 88, location: "Back garden", streakDays: 7, isOutdoor: true, dailyWater: "450ml", sunlight: "Full sun", soilType: "Loamy", ageDays: 32),
+        PlantModel(name: "Tomatoes", species: "Solanum lycopersicum", status: .healthy, healthScore: 88, location: "Back garden", streakDays: 7, isOutdoor: true, dailyWater: "450ml", sunlight: "Full sun", soilType: "Loamy", ageDays: 32, initialNote: "Planted in a sunny spot with organic compost."),
         PlantModel(name: "Rose Bush", species: "Rosa", status: .warning, healthScore: 54, location: "Front garden", careLogs: [
             CareLogEntry(type: .observation, date: Calendar.current.date(byAdding: .hour, value: -4, to: .now)!, title: "Yellowing leaves noticed", note: "Lower leaves turning yellow. Possible nitrogen deficiency or root stress. Reduced watering frequency.", statusBadge: "Disease alert", colorHex: "E67E22"),
             CareLogEntry(type: .fertilizing, date: Calendar.current.date(byAdding: .day, value: -1, to: .now)!, title: "Fertiliser applied", note: "NPK 10-5-5 applied.", statusBadge: "Fertiliser", colorHex: "F1C40F"),
-            CareLogEntry(type: .watering, date: Calendar.current.date(byAdding: .day, value: -3, to: .now)!, title: "Regular watering 300ml", note: "Two new buds forming on east stem. Looking very healthy after last week's rain", statusBadge: "Watering", colorHex: "1ABC9C"),
-            CareLogEntry(type: .observation, date: Calendar.current.date(from: DateComponents(year: 2025, month: 2, day: 14, hour: 10))!, title: "Plant added to garden", note: "Rose Bush planted in front garden. Sandy soil, full sun position. First watering done.", statusBadge: "Started tracking", colorHex: "2D5A27")
-        ], streakDays: 2, isOutdoor: true, dailyWater: "300ml", sunlight: "Full sun", soilType: "Sandy", ageDays: 42),
-        PlantModel(name: "Boston Fern", species: "Nephrolepis exaltata", status: .healthy, healthScore: 80, location: "Living room", streakDays: 3, isOutdoor: false, dailyWater: "200ml", sunlight: "Partial shade", soilType: "Peat moss", ageDays: 120),
-        PlantModel(name: "Monstera", species: "Monstera deliciosa", status: .healthy, healthScore: 92, location: "Living Room", streakDays: 12, isOutdoor: false, dailyWater: "500ml", sunlight: "Indirect light", soilType: "Potting mix", ageDays: 240),
+            CareLogEntry(type: .watering, date: Calendar.current.date(byAdding: .day, value: -3, to: .now)!, title: "Regular watering 300ml", note: "Two new buds forming on east stem. Looking very healthy after last week's rain", statusBadge: "Watering", colorHex: "1ABC9C")
+        ], streakDays: 2, isOutdoor: true, dailyWater: "300ml", sunlight: "Full sun", soilType: "Sandy", ageDays: 42, initialNote: "Gift from mother-in-law. Planted in sandy soil near the fence."),
+        PlantModel(name: "Boston Fern", species: "Nephrolepis exaltata", status: .healthy, healthScore: 80, location: "Living room", streakDays: 3, isOutdoor: false, dailyWater: "200ml", sunlight: "Partial shade", soilType: "Peat moss", ageDays: 120, initialNote: "Likes high humidity. Kept near the humidifier."),
+        PlantModel(name: "Monstera", species: "Monstera deliciosa", status: .healthy, healthScore: 92, location: "Living Room", streakDays: 12, isOutdoor: false, dailyWater: "500ml", sunlight: "Indirect light", soilType: "Potting mix", ageDays: 240, initialNote: "Started from a cutting. Developing great fenestrations."),
     ]
 }

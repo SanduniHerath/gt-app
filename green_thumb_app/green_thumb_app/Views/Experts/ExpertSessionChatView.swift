@@ -1,18 +1,12 @@
 import SwiftUI
 
 struct ExpertSessionChatView: View {
+    let expert: ExpertModel
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
+    @EnvironmentObject var expertVM: ExpertViewModel
     @State private var messageText: String = ""
     @State private var isExpertTyping: Bool = false
-    
-    // Initial mock messages
-    @State private var messages: [ChatMessage] = [
-        ChatMessage(senderId: "expert_1", content: "Hello! I've reviewed your Rose Bush. The yellowing pattern on the lower leaves strongly suggests nitrogen deficiency. Can u share a photo of the affected leaves?", isFromUser: false),
-        // The attachment is handled separately in this mockup logic for now
-        ChatMessage(senderId: "user_1", content: "Sure, here's a photo I took this morning.", isFromUser: true),
-        ChatMessage(senderId: "expert_1", content: "Thank you. The photo confirms nitrogen deficiency. The yellowing starts at the base and moves upward - classic symptom. Apply NPK 20-5-10 twice this week", isFromUser: false)
-    ]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -34,9 +28,9 @@ struct ExpertSessionChatView: View {
                     ZStack(alignment: .bottomTrailing) {
                         ZStack {
                             Circle()
-                                .fill(Color(hex: "A374F9")) // Purple
+                                .fill(avatarColor)
                                 .frame(width: 48, height: 48)
-                            Text("NP")
+                            Text(initials)
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(.white)
                         }
@@ -49,61 +43,37 @@ struct ExpertSessionChatView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Dr. Nimal Perera")
+                        Text(expert.name)
                             .font(GTFont.labelLarge())
                             .foregroundColor(.gtTextPrimary)
-                        Text("Agricultural officer - Online")
+                        Text("\(expert.specialty) - Online")
                             .font(GTFont.bodySmall())
                             .foregroundColor(.gtTextSecondary)
                     }
                     
                     Spacer()
-                    
-                    HStack(spacing: 12) {
-                        Button(action: {}) {
-                            Circle()
-                                .fill(Color(hex: "D0DFCD")) // Light gray green
-                                .frame(width: 40, height: 40)
-                                .overlay(
-                                    Image(systemName: "phone.fill")
-                                        .foregroundColor(Color.gtForestGreen)
-                                        .font(.system(size: 16))
-                                )
-                        }
-                        
-                        Button(action: {}) {
-                            Circle()
-                                .fill(Color(hex: "D0DFCD")) // Light gray green
-                                .frame(width: 40, height: 40)
-                                .overlay(
-                                    Image(systemName: "ellipsis")
-                                        .foregroundColor(Color.gtForestGreen)
-                                        .font(.system(size: 18))
-                                )
-                        }
-                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 80)
                 .padding(.bottom, 20)
-                .background(Color(hex: "F2F2F2")) // Header BG from SS
+                .background(Color(hex: "F2F2F2"))
                 
                 // MARK: - Banner
                 HStack(spacing: 12) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(hex: "31541D")) // Dark Green BG for icon
+                            .fill(Color(hex: "31541D"))
                             .frame(width: 36, height: 36)
                         Image(systemName: "calendar")
                             .font(.system(size: 18))
-                            .foregroundColor(Color(hex: "78B960")) // Light Green icon
+                            .foregroundColor(Color(hex: "78B960"))
                     }
                     
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("Session active - Rose Bush diagnosis")
+                        Text("Session active - Advisory")
                             .font(GTFont.labelMedium())
                             .foregroundColor(Color(hex: "14280E"))
-                        Text("45 min left")
+                        Text("Connected via Green Thumb")
                             .font(GTFont.labelSmall())
                             .foregroundColor(Color.gtTextSecondary.opacity(0.8))
                     }
@@ -112,7 +82,7 @@ struct ExpertSessionChatView: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 14)
-                .background(Color(hex: "D0E2C9")) // Banner BG from SS
+                .background(Color(hex: "D0E2C9"))
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
@@ -124,26 +94,17 @@ struct ExpertSessionChatView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 24) {
-                        Text("Today 3:00 PM")
+                        Text("Today")
                             .font(GTFont.labelSmall())
                             .foregroundColor(.gtTextSecondary)
-                            .padding(.top, 16)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity) // Ensures "Today" is centered and pushes width
                         
-                        ForEach(messages) { message in
+                        ForEach(expertVM.chatMessages) { message in
                             if message.isFromUser {
-                                // Check if it's the specific mock attachment message
-                                if message.content.contains("photo I took this morning") {
-                                    UserAttachmentBubble(
-                                        text: message.content,
-                                        filename: "rose_leaves.jpg",
-                                        filesize: "Photo 2.1 MB",
-                                        time: formatTime(message.timestamp)
-                                    )
-                                } else {
-                                    UserMessageBubble(text: message.content, time: formatTime(message.timestamp))
-                                }
+                                UserMessageBubble(text: message.content, time: formatTime(message.timestamp))
                             } else {
-                                ExpertMessageBubble(text: message.content, time: formatTime(message.timestamp))
+                                ExpertMessageBubble(expertInitials: initials, expertColor: avatarColor, text: message.content, time: formatTime(message.timestamp))
                             }
                         }
                         
@@ -155,35 +116,15 @@ struct ExpertSessionChatView: View {
                             }
                             .id("typing")
                         }
-                        
-                        // "More" button remains as a static element for now at the bottom of historical context if needed
-                        HStack {
-                            Spacer()
-                            Button(action: {}) {
-                                Circle()
-                                    .fill(Color(hex: "14280E"))
-                                    .frame(width: 60, height: 40)
-                                    .overlay(
-                                        Image(systemName: "ellipsis")
-                                            .foregroundColor(.white)
-                                            .font(.system(size: 20, weight: .bold))
-                                    )
-                            }
-                        }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
                 }
-                .onChange(of: messages.count) { _ in
-                    withAnimation { proxy.scrollTo(messages.last?.id, anchor: .bottom) }
-                }
-                .onChange(of: isExpertTyping) { typing in
-                    if typing {
-                        withAnimation { proxy.scrollTo("typing", anchor: .bottom) }
-                    }
+                .background(Color(hex: "E0E0E0")) // Apply background to ScrollView to fill width
+                .onChange(of: expertVM.chatMessages.count) { _ in
+                    withAnimation { proxy.scrollTo(expertVM.chatMessages.last?.id, anchor: .bottom) }
                 }
             }
-            .background(Color(hex: "E0E0E0")) // Chat area BG from SS
             
             // MARK: - Input Bar
             HStack(spacing: 12) {
@@ -209,13 +150,13 @@ struct ExpertSessionChatView: View {
                 .frame(height: 52)
                 .background(
                     Capsule()
-                        .fill(Color(hex: "E7F0E2")) // Light green field BG
+                        .fill(Color(hex: "E7F0E2"))
                         .overlay(Capsule().stroke(Color.gtBorder.opacity(0.5), lineWidth: 1))
                 )
                 
                 Button(action: sendMessage) {
                     Circle()
-                        .fill(Color(hex: "14280E")) // Dark Green send button
+                        .fill(Color(hex: "14280E"))
                         .frame(width: 52, height: 52)
                         .overlay(
                             Image(systemName: "location.north.fill")
@@ -232,28 +173,18 @@ struct ExpertSessionChatView: View {
         }
         .ignoresSafeArea()
         .navigationBarHidden(true)
+        .onAppear {
+            expertVM.startChat(with: expert)
+        }
+        .toolbar(.hidden, for: .tabBar)
     }
     
     // MARK: - Logic
     
     private func sendMessage() {
         guard !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        
-        let newMessage = ChatMessage(senderId: "user_1", content: messageText, isFromUser: true)
-        messages.append(newMessage)
+        expertVM.sendChatMessage(expert: expert, content: messageText)
         messageText = ""
-        
-        // Simulate expert typing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation { isExpertTyping = true }
-            
-            // Expert stops typing and sends a reply
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                withAnimation { isExpertTyping = false }
-                let reply = ChatMessage(senderId: "expert_1", content: "That looks like progress! Keep following the schedule.", isFromUser: false)
-                messages.append(reply)
-            }
-        }
     }
     
     private func formatTime(_ date: Date) -> String {
@@ -261,11 +192,33 @@ struct ExpertSessionChatView: View {
         formatter.dateFormat = "h:mm a"
         return formatter.string(from: date)
     }
+    
+    private var initials: String {
+        expert.name.components(separatedBy: " ")
+            .compactMap { $0.first }
+            .map { String($0) }
+            .suffix(2)
+            .joined()
+            .uppercased()
+    }
+    
+    private var avatarColor: Color {
+        if initials.contains("N") { return Color.gtBadgePurpleText.opacity(0.7) }
+        return Color.gtBadgeTealText.opacity(0.7)
+    }
+}
+
+#Preview {
+    ExpertSessionChatView(expert: ExpertModel.samples[0])
+        .environmentObject(AppRouter())
+        .environmentObject(ExpertViewModel())
 }
 
 // MARK: - Components
 
 struct ExpertMessageBubble: View {
+    let expertInitials: String
+    let expertColor: Color
     let text: String
     let time: String
     
@@ -273,9 +226,9 @@ struct ExpertMessageBubble: View {
         HStack(alignment: .bottom, spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(Color(hex: "A374F9"))
+                    .fill(expertColor)
                     .frame(width: 40, height: 40)
-                Text("NP")
+                Text(expertInitials)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
             }
@@ -400,7 +353,7 @@ struct TypingIndicator: View {
         .padding(.vertical, 14)
         .background(
             CustomRoundedCorners(tl: 20, tr: 20, bl: 4, br: 20)
-            .fill(Color(hex: "14280E")) // iOS Expert style bubble
+            .fill(Color(hex: "14280E"))
         )
         .onAppear {
             withAnimation(.easeInOut(duration: 0.5).repeatForever().delay(0.0)) { dotOffset1 = -5 }
@@ -439,8 +392,4 @@ struct CustomRoundedCorners: Shape {
         path.addLine(to: CGPoint(x: w / 2.0, y: 0))
         return path
     }
-}
-
-#Preview {
-    ExpertSessionChatView()
 }

@@ -31,10 +31,11 @@ class AddPlantViewModel: ObservableObject {
             healthScore: 100,
             imageURL: "plant_rose", // Default or selected image
             location: location,
-            dateAdded: Date(),
+            dateAdded: datePlanted,
             tags: tags,
             isOutdoor: potType == "Ground",
-            ageDays: ageDays
+            ageDays: ageDays,
+            initialNote: notes
         )
         
         print("Saving plant: \(name)")

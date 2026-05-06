@@ -97,9 +97,14 @@ class SchedulerViewModel: ObservableObject {
 
     func toggleTask(_ task: SchedulerTaskModel) {
         let docRef = db.collection(collectionName).document(task.id)
-        docRef.updateData(["isCompleted": !task.isCompleted]) { error in
+        let newStatus = !task.isCompleted
+        
+        docRef.updateData(["isCompleted": newStatus]) { error in
             if let error = error {
                 print("❌ Error updating task: \(error.localizedDescription)")
+            } else if newStatus {
+                // If marked as completed, cancel any pending notification
+                NotificationManager.shared.cancelNotification(id: task.id)
             }
         }
     }
@@ -117,6 +122,14 @@ class SchedulerViewModel: ObservableObject {
         
         do {
             try db.collection(collectionName).document(newTask.id).setData(from: newTask)
+            
+            // 🔔 Schedule the notification
+            NotificationManager.shared.scheduleCalendarNotification(
+                id: newTask.id,
+                title: "\(type.rawValue) Reminder \(type.icon)",
+                body: "It's time to \(type.rawValue.lowercased()) your \(plantName)!",
+                date: dueDate
+            )
         } catch {
             print("❌ Error adding task: \(error.localizedDescription)")
         }

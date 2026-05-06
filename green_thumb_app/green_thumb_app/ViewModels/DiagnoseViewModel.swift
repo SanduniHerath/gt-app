@@ -144,8 +144,20 @@ class DiagnoseViewModel: ObservableObject {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             // Fallback to the first available diagnosis if no perfect match found
-            self.currentResult = bestMatch ?? self.knowledgeBase.first
+            let result = bestMatch ?? self.knowledgeBase.first
+            self.currentResult = result
             self.isAnalyzing = false
+            
+            // 🔔 Schedule 7-day follow-up reminder
+            if let diagnosis = result {
+                let plantName = self.selectedPlant?.name ?? "your plant"
+                NotificationManager.shared.scheduleIntervalNotification(
+                    id: "followup-\(diagnosis.name)-\(Date().timeIntervalSince1970)",
+                    title: "Disease Check Reminder 🔍",
+                    body: "Check your \(plantName) — it has been 7 days since your \(diagnosis.name.lowercased()) diagnosis.",
+                    interval: 7 * 24 * 60 * 60 // 7 days in seconds
+                )
+            }
         }
     }
 

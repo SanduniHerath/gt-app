@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NotificationsView: View {
     @EnvironmentObject var router: AppRouter
+    @EnvironmentObject var notifyVM: NotificationsViewModel
     @State private var selectedFilter = 0
     
     var body: some View {
@@ -24,83 +25,77 @@ struct NotificationsView: View {
                 
                 Spacer()
                 
-                Button { /* Action */ } label: {
+                Button { notifyVM.markAllRead() } label: {
                     Text("Mark all read")
                         .font(GTFont.labelMedium())
                         .foregroundColor(.gtMidGreen)
                 }
             }
             .padding(.horizontal, GTSpacing.lg)
-            .padding(.top, GTSpacing.lg)
+            .padding(.top, 20)
             .padding(.bottom, GTSpacing.md)
             .background(Color.gtBackground)
             
-            // Filters
-            HStack(spacing: GTSpacing.sm) {
-                FilterTab(title: "All", isSelected: selectedFilter == 0) { selectedFilter = 0 }
-                FilterTab(title: "Watering", isSelected: selectedFilter == 1) { selectedFilter = 1 }
-                FilterTab(title: "Disease", isSelected: selectedFilter == 2) { selectedFilter = 2 }
-                Spacer()
-            }
-            .padding(.horizontal, GTSpacing.lg)
-            .padding(.bottom, GTSpacing.md)
-            
+            // Content
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: GTSpacing.lg) {
-                    // NEW section
-                    VStack(alignment: .leading, spacing: GTSpacing.sm) {
-                        Text("NEW – 2 UNREAD")
-                            .font(GTFont.labelSmall())
-                            .foregroundColor(.gtTextMuted)
-                        
-                        VStack(spacing: GTSpacing.md) {
+                    if notifyVM.notifications.isEmpty {
+                        VStack(spacing: 20) {
+                            Spacer(minLength: 100)
+                            Image(systemName: "bell.slash")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gtTextMuted)
+                            Text("No notifications yet")
+                                .font(GTFont.labelLarge())
+                                .foregroundColor(.gtTextMuted)
+                        }
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        ForEach(notifyVM.notifications) { notification in
                             NotificationCard(
-                                title: "Disease alert",
-                                subtitle: "Your Rose Bush signs of leaf yellowing. Diagnose now to prevent spreading",
-                                time: "2 min ago",
-                                icon: "exclamationmark.triangle.fill",
-                                color: .gtStatusUrgent,
-                                badgeText: "Urgent",
-                                actionTitle: "Diagnose now",
+                                title: notification.title,
+                                subtitle: notification.message,
+                                time: "Just now", // In a real app, format notification.timestamp
+                                icon: iconForType(notification.type),
+                                color: colorForType(notification.type),
+                                actionTitle: notification.type == .expert ? "View Session" : nil,
                                 action: {
-                                    router.navigate(to: .diagnosisResult)
+                                    // Handle actions
                                 }
                             )
-                            
-                            NotificationCard(
-                                title: "Time to water",
-                                subtitle: "Rose Bush is due for watering at 2:00 PM today. 300ml recommended",
-                                time: "15 min ago",
-                                icon: "drop.fill",
-                                color: .gtWatering,
-                                actionTitle: "Mark done"
-                            )
                         }
-                    }
-                    
-                    // EARLIER section
-                    VStack(alignment: .leading, spacing: GTSpacing.sm) {
-                        Text("EARLIER")
-                            .font(GTFont.labelSmall())
-                            .foregroundColor(.gtTextMuted)
-                        
-                        NotificationCard(
-                            title: "Session confirmed",
-                            subtitle: "Mr. Nimal Perera confirmed your 3:00 PM session for tomorrow.",
-                            time: "Yesterday 4:22 PM",
-                            icon: "person.2.fill",
-                            color: .gtAccentGreen,
-                            actionTitle: "View Session"
-                        )
                     }
                     
                     Spacer(minLength: 100)
                 }
                 .padding(.horizontal, GTSpacing.lg)
+                .padding(.top, GTSpacing.md)
             }
         }
         .background(Color.gtBackground)
         .navigationBarHidden(true)
+    }
+    
+    private func iconForType(_ type: NotificationType) -> String {
+        switch type {
+        case .watering: return "drop.fill"
+        case .fertilizing: return "leaf.fill"
+        case .diagnosis: return "waveform.path.ecg.rectangle"
+        case .expert: return "person.2.fill"
+        case .community: return "bubble.left.fill"
+        case .system: return "gearshape.fill"
+        }
+    }
+    
+    private func colorForType(_ type: NotificationType) -> Color {
+        switch type {
+        case .watering: return .gtWatering
+        case .fertilizing: return .gtDarkGreen
+        case .diagnosis: return .gtStatusUrgent
+        case .expert: return .gtAccentGreen
+        case .community: return .gtBadgeTealText
+        case .system: return .gtTextMuted
+        }
     }
 }
 

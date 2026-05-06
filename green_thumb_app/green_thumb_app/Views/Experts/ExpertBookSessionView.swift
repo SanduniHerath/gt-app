@@ -4,6 +4,9 @@ struct ExpertBookSessionView: View {
     let expert: ExpertModel
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
+    @EnvironmentObject var expertVM: ExpertViewModel
+    @EnvironmentObject var notifyVM: NotificationsViewModel
+    
     @State private var selectedDate: String = "3"
     @State private var selectedTime: String = "3:00 PM"
     
@@ -89,7 +92,9 @@ struct ExpertBookSessionView: View {
                     
                     // Confirm Button
                     Button(action: {
-                        router.navigate(to: .notifications)
+                        // Create a mock date for the selected day in current week
+                        let date = Date() // In a real app, calculate based on selectedDate
+                        expertVM.bookSession(expert: expert, date: date, timeSlot: selectedTime)
                     }) {
                         HStack {
                             Spacer()
@@ -111,6 +116,22 @@ struct ExpertBookSessionView: View {
         .background(Color(hex: "D9D9D9")) // Matched gray background
         .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
+        .onChange(of: expertVM.bookingSuccess) { success in
+            if success {
+                // Add notification
+                notifyVM.addNotification(
+                    type: .expert,
+                    title: "Session Confirmed",
+                    message: "Success! Your session with \(expert.name) on May \(selectedDate) at \(selectedTime) is confirmed."
+                )
+                
+                // Navigate
+                router.navigate(to: .notifications)
+                
+                // Reset flag
+                expertVM.bookingSuccess = false
+            }
+        }
     }
     
     private var initials: String {

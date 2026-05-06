@@ -103,7 +103,7 @@ struct ExpertFindView: View {
                 case .bookSession(let expert):
                     ExpertBookSessionView(expert: expert)
                 case .expertChat(let expert):
-                    ExpertSessionChatView()
+                    ExpertSessionChatView(expert: expert)
                 case .notifications:
                     NotificationsView()
                 case .diagnosisResult:

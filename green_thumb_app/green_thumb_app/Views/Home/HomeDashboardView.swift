@@ -127,6 +127,8 @@ struct HomeDashboardView: View {
                     AddPlantView()
                 case .careGuide(let species):
                     CareGuideView(speciesName: species)
+                case .symptomChecker:
+                    SymptomCheckerView()
                 case .diagnosisResult:
                     DiagnosisResultView()
                 case .nearbyExperts:

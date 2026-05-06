@@ -117,19 +117,23 @@ extension ExpertModel {
             department: "Plant pathology Dept.",
             location: "Kandy",
             rating: 4.7,
-            reviewCount: 84,
+            reviewCount: 86,
             experienceYears: 12,
             sessionsCount: 520,
             pricePerHour: 0,
-            bio: "Specializing in identification and treatment of plant diseases.",
+            bio: "Specializing in identification and treatment of plant diseases with over 12 years of research experience.",
             availableSlots: [
                 AvailableSlot(date: Calendar.current.date(byAdding: .day, value: 4, to: .now)!)
             ],
             isOnline: false,
             distanceKm: 4.2,
-            tags: ["Disease", "Greenhouse"],
+            tags: ["Disease", "Greenhouse", "Soil Biology"],
             isGovtOfficer: true,
-            isTopRated: false
+            isTopRated: false,
+            reviews: [
+                ExpertReview(authorName: "Kasun T.", rating: 5, content: "Very knowledgeable about greenhouse pests. Saved my tomato crop!", date: "1 week ago"),
+                ExpertReview(authorName: "Dilini R.", rating: 4, content: "Great advice on soil pH levels. Very professional.", date: "3 weeks ago")
+            ]
         )
     ]
 }

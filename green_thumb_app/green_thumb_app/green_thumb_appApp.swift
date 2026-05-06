@@ -5,8 +5,9 @@ import Firebase
 struct green_thumb_appApp: App {
     
     init() {
-            FirebaseApp.configure()   // ← add this line
-        }
+        FirebaseApp.configure()
+        NotificationManager.shared.requestAuthorization()
+    }
     
     @StateObject private var router         = AppRouter()
     @StateObject private var authVM         = AuthViewModel()

@@ -8,7 +8,7 @@ struct GTDetailInfoCard: View {
     let iconColor: Color
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 12) {
             ZStack {
                 Circle()
                     .fill(iconColor.opacity(0.12))
@@ -18,23 +18,29 @@ struct GTDetailInfoCard: View {
                     .font(.system(size: 20, weight: .semibold))
             }
             
-            VStack(spacing: 2) {
+            VStack(spacing: 4) {
                 Text(value)
-                    .font(GTFont.labelMedium())
+                    .font(GTFont.labelSmall())
                     .foregroundColor(.gtTextPrimary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.7)
+                
                 Text(label)
                     .font(GTFont.labelSmall())
                     .foregroundColor(.gtTextMuted)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .frame(height: 145) // Fixed height for uniformity
+        .padding(.horizontal, 4)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 20)
                 .fill(Color.white)
+                .gtShadow(GTShadow.card)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.black.opacity(0.03), lineWidth: 1)
                 )
         )
     }

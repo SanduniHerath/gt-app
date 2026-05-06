@@ -4,6 +4,7 @@ struct PlantDetailsView: View {
     let plant: PlantModel
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
+    @StateObject private var careViewModel = CareGuideViewModel()
     @State private var selectedTab = 0 // 0: Notes, 1: Timeline
 
     var body: some View {
@@ -14,8 +15,7 @@ struct PlantDetailsView: View {
                 
                 HStack {
                     Button { 
-                        router.selectedTab = 1
-                        router.popToRoot()
+                        router.pop()
                     } label: {
                         ZStack {
                             Circle()
@@ -97,19 +97,20 @@ struct PlantDetailsView: View {
 
                         // Info Grid
                         HStack(spacing: 10) {
-                            GTDetailInfoCard(icon: "drop.fill", value: plant.dailyWater, label: "Daily water", iconColor: .gtWatering)
-                            GTDetailInfoCard(icon: "sun.max.fill", value: plant.sunlight, label: "Sunlight", iconColor: .orange)
-                            GTDetailInfoCard(icon: "square.grid.2x2", value: plant.soilType, label: "Soil type", iconColor: .gtDarkGreen)
-                            GTDetailInfoCard(icon: "calendar", value: "\(plant.ageDays) days", label: "Age", iconColor: .purple)
+                            let waterVal = careViewModel.careGuide?.watering.amount ?? plant.dailyWater
+                            let sunVal = careViewModel.careGuide?.sunlight.requirement ?? plant.sunlight
+                            let soilVal = careViewModel.careGuide?.soil.type ?? plant.soilType
+                            
+                            GTDetailInfoCard(icon: "drop.fill", value: waterVal, label: "Daily water", iconColor: .gtWatering)
+                            GTDetailInfoCard(icon: "sun.max.fill", value: sunVal, label: "Sunlight", iconColor: .orange)
+                            GTDetailInfoCard(icon: "square.grid.2x2", value: soilVal, label: "Soil type", iconColor: .gtDarkGreen)
+                            GTDetailInfoCard(icon: "calendar", value: plant.calculatedAge, label: "Age", iconColor: .purple)
                         }
 
                         // Action Grid
                         HStack(spacing: 0) {
                             GTDetailActionButton(icon: "drop.fill", label: "Water", color: .gtWatering) {
                                 router.navigate(to: .careGuide(plant.species))
-                            }
-                            GTDetailActionButton(icon: "exclamationmark.triangle", label: "Diagnose", color: .gtStatusUrgent, hasAlert: true) {
-                                router.navigate(to: .diagnosisResult)
                             }
                             GTDetailActionButton(icon: "book", label: "Care guide", color: .gtDarkGreen) {
                                 router.navigate(to: .careGuide(plant.species))
@@ -163,11 +164,27 @@ struct PlantDetailsView: View {
                             
                             if selectedTab == 0 {
                                 VStack(spacing: 0) {
-                                    GTNoteEntry(dotColor: .orange, content: "Noticed yellowing on lower leaves. Maybe nitrogen deficiency or overwatering. Reduced watering to every 2 days", timestamp: "Today 8.30 AM")
-                                    Divider()
-                                    GTNoteEntry(dotColor: .gtAccentGreen, content: "Two new buds forming on the east-facing stem. Growth looking good after last week's rain", timestamp: "3 days ago 9.00 AM")
-                                    Divider()
-                                    GTNoteEntry(dotColor: .gtWatering, content: "Watered 300ml. Noticed new lateral shoot emerging from second node - healthy sign", timestamp: "4 days ago 7.15 AM")
+                                    if let note = plant.initialNote, !note.isEmpty {
+                                        GTNoteEntry(dotColor: .gtAccentGreen, content: note, timestamp: "Planting Note - \(plant.dateAdded.formatted(date: .abbreviated, time: .omitted))")
+                                    }
+                                    
+                                    // Map recent care logs to notes if they exist
+                                    ForEach(plant.careLogs.prefix(3)) { log in
+                                        Divider()
+                                        GTNoteEntry(
+                                            dotColor: log.type == .watering ? .gtWatering : .orange,
+                                            content: log.note,
+                                            timestamp: log.date.formatted(date: .abbreviated, time: .shortened)
+                                        )
+                                    }
+                                    
+                                    if (plant.initialNote?.isEmpty ?? true) && plant.careLogs.isEmpty {
+                                        Text("No observations yet. Start by adding a note or care log!")
+                                            .font(GTFont.bodyMedium())
+                                            .foregroundColor(.gtTextMuted)
+                                            .padding(.vertical, 40)
+                                            .frame(maxWidth: .infinity)
+                                    }
                                 }
                             } else {
                                 // Growth Timeline Integration
@@ -189,7 +206,7 @@ struct PlantDetailsView: View {
                                                 .font(GTFont.displaySmall())
                                                 .foregroundColor(.gtTextPrimary)
                                             
-                                            Text("See your Rose Bush journey since 14 Feb 2025")
+                                            Text("See your \(plant.name) journey since \(plant.dateAdded.formatted(date: .long, time: .omitted))")
                                                 .font(GTFont.bodyMedium())
                                                 .foregroundColor(.gtTextSecondary)
                                         }
@@ -230,6 +247,9 @@ struct PlantDetailsView: View {
             .background(Color(red: 0.96, green: 0.96, blue: 0.96))
         }
         .navigationBarHidden(true)
+        .onAppear {
+            careViewModel.fetchCareGuide(for: plant.species)
+        }
     }
 }
 
