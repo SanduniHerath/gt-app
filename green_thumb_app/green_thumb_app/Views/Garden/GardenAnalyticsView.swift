@@ -31,6 +31,7 @@ struct GardenAnalyticsView: View {
         VStack(spacing: 0) {
             // ── Header ─────────────────────────────────────────────
             HStack {
+                // ♿ Touch Target: circle is 38pt, expand to 44pt minimum
                 Button { router.pop() } label: {
                     ZStack {
                         Circle().fill(Color.white).frame(width: 38, height: 38).gtShadow(GTShadow.card)
@@ -38,7 +39,11 @@ struct GardenAnalyticsView: View {
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.gtTextPrimary)
                     }
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
                 }
+                .accessibilityLabel("Back")
+                .accessibilityHint("Double-tap to go back to the home dashboard")
 
                 Text("Garden Analytics")
                     .font(GTFont.displaySmall())
@@ -122,8 +127,9 @@ struct GardenAnalyticsView: View {
                         }
                     }
 
-                    // ── Watering Streak ─────────────────────────────
+                    // ♿ VoiceOver: each streak day dot reads its status
                     GTStreakGrid(days: streakDays)
+                        .accessibilityElement(children: .contain)
 
                     // ── Disease History (Dynamic) ───────────────────
                     VStack(alignment: .leading, spacing: GTSpacing.sm) {

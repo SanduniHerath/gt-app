@@ -16,6 +16,7 @@ struct HomeDashboardView: View {
                     VStack(alignment: .leading, spacing: GTSpacing.xs) {
                         HStack {
                             GTAvatar(name: profileVM.profile.name, size: 40)
+                                .accessibilityHidden(true) // Decorative avatar
                             VStack(alignment: .leading, spacing: 0) {
                                 Text("Good morning")
                                     .font(GTFont.bodySmall())
@@ -24,14 +25,20 @@ struct HomeDashboardView: View {
                                     .font(GTFont.labelLarge())
                                     .foregroundColor(.white)
                             }
-                        
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("Good morning, \(profileVM.profile.name)")
 
                             Spacer()
+                            // ♿ Touch Target: bell button expanded to 44×44pt
                             Button { showNotifications = true } label: {
                                 Image(systemName: "bell.fill")
-                                    .font(.system(size: 22))
+                                    .font(.system(size: 22)) // ♿ icon — decorative, fixed size ok
                                     .foregroundColor(.white)
+                                    .frame(minWidth: 44, minHeight: 44)
+                                    .contentShape(Rectangle())
                             }
+                            .accessibilityLabel("Notifications")
+                            .accessibilityHint("Double-tap to open your notifications")
                         }
                         .padding(.top, GTSpacing.lg)
                         .padding(.bottom, GTSpacing.md)
@@ -51,6 +58,10 @@ struct HomeDashboardView: View {
                                     icon: "leaf.fill", 
                                     color: .gtAccentGreen
                                 )
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("\(totalPlants) total plants in your garden")
+                                .accessibilityHint("Double-tap to view garden analytics")
+                                .accessibilityAddTraits(.isButton)
                                 .onTapGesture { router.navigate(to: .gardenAnalytics) }
                                 
                                 let globalStreak = profileVM.profile.streakDays
@@ -61,6 +72,10 @@ struct HomeDashboardView: View {
                                     subtext: "personal best", 
                                     color: .gtStreak
                                 )
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("\(globalStreak) day watering streak, personal best")
+                                .accessibilityHint("Double-tap to view garden analytics")
+                                .accessibilityAddTraits(.isButton)
                                 .onTapGesture { router.navigate(to: .gardenAnalytics) }
                             }
                             HStack(spacing: GTSpacing.sm) {
@@ -73,6 +88,10 @@ struct HomeDashboardView: View {
                                     subtext: "\(pendingCount) pending", 
                                     color: .gtWatering
                                 )
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("\(todayTasks.count) tasks today, \(pendingCount) still pending")
+                                .accessibilityHint("Double-tap to view garden analytics")
+                                .accessibilityAddTraits(.isButton)
                                 .onTapGesture { router.navigate(to: .gardenAnalytics) }
                                 
                                 let alertCount = plantVM.plants.filter { $0.status == .warning || $0.status == .critical }.count
@@ -83,6 +102,10 @@ struct HomeDashboardView: View {
                                     subtext: alertCount > 0 ? "\(alertCount) needs care" : "All healthy", 
                                     color: alertCount > 0 ? .gtStatusUrgent : .gtDarkGreen
                                 )
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel(alertCount > 0 ? "\(alertCount) plants need attention" : "All plants are healthy")
+                                .accessibilityHint("Double-tap to view garden analytics")
+                                .accessibilityAddTraits(.isButton)
                                 .onTapGesture { router.navigate(to: .gardenAnalytics) }
                             }
                         }
@@ -300,6 +323,7 @@ struct HomeTaskRow: View {
     
     var body: some View {
         HStack(spacing: GTSpacing.md) {
+            // ♿ Touch Target: wrap 28pt circle in a 44pt invisible frame
             ZStack {
                 Circle()
                     .stroke(isDone ? Color.gtAccentGreen : Color.gtBorder, lineWidth: 2)
@@ -310,6 +334,9 @@ struct HomeTaskRow: View {
                         .foregroundColor(.gtAccentGreen)
                 }
             }
+            .frame(minWidth: 44, minHeight: 44)
+            .contentShape(Rectangle())
+            .accessibilityHidden(true) // Entire row is one accessible element below
             
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
@@ -319,6 +346,7 @@ struct HomeTaskRow: View {
                     .foregroundColor(color)
                     .font(.system(size: 20))
             }
+            .accessibilityHidden(true) // Decorative icon
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -348,6 +376,11 @@ struct HomeTaskRow: View {
                 .fill(Color.white)
                 .gtShadow(GTShadow.card)
         )
+        // ♿ VoiceOver: entire row as one readable unit
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(subtitle). \(isDone ? "Completed" : "Due at \(time ?? "today")")")
+        .accessibilityHint(isDone ? "" : "Double-tap to mark as done")
+        .accessibilityAddTraits(isDone ? [.isStaticText] : [.isButton])
     }
 }
 

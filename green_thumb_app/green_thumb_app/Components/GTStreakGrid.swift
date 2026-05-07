@@ -24,7 +24,10 @@ struct GTStreakGrid: View {
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(index < days.count && days[index] ? Color.gtDarkGreen : Color.gtSeparator)
                                 .aspectRatio(1, contentMode: .fit)
+                                // ♿ VoiceOver: reads each day's status aloud
+                                .accessibilityLabel("Day \(index + 1): \(index < days.count && days[index] ? "Watered" : "Missed")")
                             Text("\(index + 1)").font(GTFont.labelSmall()).foregroundColor(.gtTextMuted)
+                                .accessibilityHidden(true) // Number covered by label above
                         }
                     }
                 }

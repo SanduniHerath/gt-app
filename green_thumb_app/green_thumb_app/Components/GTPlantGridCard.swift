@@ -19,7 +19,6 @@ struct GTPlantGridCard: View {
                     
                     if let imageURLString = plant.imageURL,
                        let imageURL = URL(string: imageURLString) {
-                        // ✅ Real photo from Cloudinary
                         AsyncImage(url: imageURL) { phase in
                             switch phase {
                             case .empty:
@@ -30,7 +29,7 @@ struct GTPlantGridCard: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(maxWidth: .infinity)
-                                    .frame(height: 140) // Fixed height to match placeholder
+                                    .frame(height: 140)
                                     .clipped()
                             case .failure:
                                 Text(emojiForPlant(plant.name))
@@ -39,14 +38,15 @@ struct GTPlantGridCard: View {
                                 EmptyView()
                             }
                         }
+                        .accessibilityLabel("\(plant.name) plant photo")
                     } else {
-                        // Emoji placeholder
                         Text(emojiForPlant(plant.name))
                             .font(.system(size: 64))
                             .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                            .accessibilityHidden(true) // Decorative emoji
                     }
                 }
-                .frame(height: 140) // ✅ Force same height for all card tops
+                .frame(height: 140)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 
                 // Percentage Badge
@@ -58,6 +58,7 @@ struct GTPlantGridCard: View {
                     .background(Color.white.opacity(0.9))
                     .clipShape(Capsule())
                     .padding(10)
+                    .accessibilityLabel("Health score: \(Int(plant.healthScore)) percent")
             }
             .clipShape(RoundedRectangle(cornerRadius: 16))
             
@@ -118,6 +119,11 @@ struct GTPlantGridCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .gtShadow(GTShadow.card)
         .onTapGesture { onTap?() }
+        // ♿ VoiceOver: whole card as one combined accessible element
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(plant.name), \(plant.species). Health: \(Int(plant.healthScore)) percent. Location: \(plant.location), \(plant.isOutdoor ? "outdoor" : "indoor"). Status: \(plant.status == .healthy ? "healthy" : plant.status == .warning ? "needs attention" : "critical").")
+        .accessibilityHint("Double-tap to view plant details")
+        .accessibilityAddTraits(.isButton)
     }
     
     private var progressBarColor: Color {
@@ -138,6 +144,9 @@ struct GTPlantGridCard: View {
                     .background(Color(red: 0.8, green: 0.2, blue: 0.2).opacity(0.15))
                     .clipShape(Capsule())
             }
+            .frame(minWidth: 44, minHeight: 44) // ♿ Touch Target
+            .accessibilityLabel("Diagnose \(plant.name)")
+            .accessibilityHint("Double-tap to run a diagnosis on this plant")
         } else if plant.healthScore < 90 {
             Button(action: {}) {
                 Text("Water today")
@@ -148,6 +157,8 @@ struct GTPlantGridCard: View {
                     .background(Color(red: 0.2, green: 0.7, blue: 0.9).opacity(0.15))
                     .clipShape(Capsule())
             }
+            .frame(minWidth: 44, minHeight: 44) // ♿ Touch Target
+            .accessibilityLabel("Water \(plant.name) today")
         } else {
             Text("Good")
                 .font(GTFont.labelSmall())
@@ -156,6 +167,7 @@ struct GTPlantGridCard: View {
                 .padding(.vertical, 6)
                 .background(Color.gtPaleGreen)
                 .clipShape(Capsule())
+                .accessibilityHidden(true) // Purely informational, covered by card label
         }
     }
     

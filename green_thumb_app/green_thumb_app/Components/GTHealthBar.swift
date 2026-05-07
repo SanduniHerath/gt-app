@@ -22,6 +22,9 @@ struct GTHealthBar: View {
             }
         }
         .frame(height: height)
+        // ♿ VoiceOver: reads the percentage value aloud
+        .accessibilityLabel("Health bar")
+        .accessibilityValue("\(Int(value * 100)) percent")
     }
 }
 

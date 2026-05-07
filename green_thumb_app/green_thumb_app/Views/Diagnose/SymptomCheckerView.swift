@@ -59,7 +59,7 @@ struct SymptomCheckerView: View {
                                     RoundedRectangle(cornerRadius: 12)
                                         .fill(Color.gtDarkGreen)
                                         .frame(width: 48, height: 48)
-                                    Text("🌷") // In a real app, this might come from plant icons
+                                    Text("🌷")
                                         .font(.system(size: 24))
                                 }
                                 
@@ -83,7 +83,10 @@ struct SymptomCheckerView: View {
                                     .stroke(Color.white.opacity(0.4), lineWidth: 1)
                             )
                         }
-                        .padding(.bottom, 40) // Space for the overlapping content
+                        // ♿ VoiceOver
+                        .accessibilityLabel("Selected plant: \(diagnoseVM.selectedPlant?.name ?? "none selected")")
+                        .accessibilityHint("Double-tap to change the plant you are diagnosing")
+                        .padding(.bottom, 40)
                     }
                     .padding(.horizontal, 24)
                 }
@@ -163,6 +166,9 @@ struct SymptomCheckerView: View {
                                 router.navigate(to: .diagnosisResult)
                             }
                         )
+                        // ♿ VoiceOver
+                        .accessibilityLabel("Analyse symptoms")
+                        .accessibilityHint("Double-tap to run a diagnosis on the selected plant based on your chosen symptoms")
                         .padding(.top, 10)
                         
                         Spacer(minLength: 120)
@@ -220,6 +226,13 @@ struct SymptomTag: View {
                         )
                 )
         }
+        // ♿ Touch Target: at least 44pt tall
+        .frame(minHeight: 44)
+        // ♿ VoiceOver
+        .accessibilityLabel("\(title) symptom")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityHint("Double-tap to \(isSelected ? "deselect" : "select") this symptom")
+        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
     }
     
     private var tagBgColor: Color {
@@ -255,6 +268,10 @@ struct GTSeverityCard: View {
             VStack(spacing: 8) {
                 Slider(value: $value, in: 0...1, step: 0.5)
                     .tint(.orange)
+                    // ♿ VoiceOver: reads the current severity level
+                    .accessibilityLabel("Severity level")
+                    .accessibilityValue(severityLabel)
+                    .accessibilityHint("Drag to set how severe the symptoms are")
                 
                 HStack {
                     Text("Mild").font(GTFont.labelSmall()).foregroundColor(.gtTextMuted)
@@ -263,6 +280,7 @@ struct GTSeverityCard: View {
                     Spacer()
                     Text("Severe").font(GTFont.labelSmall()).foregroundColor(.gtTextMuted)
                 }
+                .accessibilityHidden(true) // Labels are decorative; slider value covers them
             }
         }
         .padding(20)
@@ -291,6 +309,7 @@ struct AffectedPartCard: View {
                 Image(systemName: iconName)
                     .font(.system(size: 24))
                     .foregroundColor(isSelected ? .gtDarkGreen : .gtTextMuted)
+                    .accessibilityHidden(true) // Covered by button label below
                 
                 Text(part)
                     .font(GTFont.labelSmall())
@@ -307,6 +326,12 @@ struct AffectedPartCard: View {
                     )
             )
         }
+        // ♿ Touch Target: frame is already 80pt tall ✅
+        // ♿ VoiceOver
+        .accessibilityLabel("\(part) affected area")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityHint("Double-tap to \(isSelected ? "deselect" : "select") \(part) as affected")
+        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
     }
     
     private var iconName: String {

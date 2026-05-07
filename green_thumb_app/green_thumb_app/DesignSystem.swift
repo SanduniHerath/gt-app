@@ -78,28 +78,30 @@ extension Color {
 }
 
 // MARK: - Typography
+// ♿ Dynamic Type: fonts use SwiftUI text styles so they scale with the user's
+// font-size preference (Settings → Display & Brightness → Text Size).
 struct GTFont {
-    // Display / Headline — Serif feel (uses "Georgia" as system fallback)
+    // Display / Headline — Serif feel (relativeTo: is valid only in .custom initializer)
     static func displayLarge()  -> Font { .custom("Georgia",        size: 34, relativeTo: .largeTitle) }
     static func displayMedium() -> Font { .custom("Georgia",        size: 28, relativeTo: .title) }
     static func displaySmall()  -> Font { .custom("Georgia",        size: 22, relativeTo: .title2) }
 
-    // Body / UI — System rounded
-    static func bodyLarge()     -> Font { .system(size: 17, weight: .regular, design: .rounded) }
-    static func bodyMedium()    -> Font { .system(size: 15, weight: .regular, design: .rounded) }
-    static func bodySmall()     -> Font { .system(size: 13, weight: .regular, design: .rounded) }
+    // Body / UI — System rounded, mapped to SwiftUI text styles (scales automatically)
+    static func bodyLarge()  -> Font { .system(.body,        design: .rounded).weight(.regular) }
+    static func bodyMedium() -> Font { .system(.subheadline, design: .rounded).weight(.regular) }
+    static func bodySmall()  -> Font { .system(.footnote,    design: .rounded).weight(.regular) }
 
-    // Label
-    static func labelLarge()    -> Font { .system(size: 15, weight: .semibold, design: .rounded) }
-    static func labelMedium()   -> Font { .system(size: 13, weight: .semibold, design: .rounded) }
-    static func labelSmall()    -> Font { .system(size: 11, weight: .semibold, design: .rounded) }
+    // Label — mapped to semantic heading/caption styles
+    static func labelLarge()  -> Font { .system(.headline,    design: .rounded).weight(.semibold) }
+    static func labelMedium() -> Font { .system(.subheadline, design: .rounded).weight(.semibold) }
+    static func labelSmall()  -> Font { .system(.caption,     design: .rounded).weight(.semibold) }
 
     // Button
-    static func buttonLarge()   -> Font { .system(size: 17, weight: .semibold, design: .rounded) }
-    static func buttonMedium()  -> Font { .system(size: 15, weight: .semibold, design: .rounded) }
+    static func buttonLarge()  -> Font { .system(.body,        design: .rounded).weight(.semibold) }
+    static func buttonMedium() -> Font { .system(.subheadline, design: .rounded).weight(.semibold) }
 
     // Italic accent
-    static func accentItalic()  -> Font { .custom("Georgia-Italic", size: 28, relativeTo: .title) }
+    static func accentItalic()       -> Font { .custom("Georgia-Italic", size: 28, relativeTo: .title) }
     static func accentItalicMedium() -> Font { .custom("Georgia-Italic", size: 22, relativeTo: .title2) }
 }
 
