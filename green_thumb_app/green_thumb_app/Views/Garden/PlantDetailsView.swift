@@ -39,14 +39,46 @@ struct PlantDetailsView: View {
                 VStack(spacing: 0) {
                     // Hero Image
                     ZStack(alignment: .topLeading) {
-                        ZStack {
-                            Rectangle()
-                                .fill(Color.gtPaleGreen.opacity(0.15))
-                            Text(plant.name.contains("Rose") ? "🌹" : "🪴")
-                                .font(.system(size: 140))
-                                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                        if let imageURLString = plant.imageURL,
+                           let imageURL = URL(string: imageURLString) {
+                            // ✅ Real photo from Cloudinary
+                            AsyncImage(url: imageURL) { phase in
+                                switch phase {
+                                case .empty:
+                                    // Loading placeholder
+                                    ZStack {
+                                        Rectangle().fill(Color.gtPaleGreen.opacity(0.3))
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .gtDarkGreen))
+                                    }
+                                    .aspectRatio(1.5, contentMode: .fit)
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .aspectRatio(1.5, contentMode: .fit)
+                                        .clipped()
+                                case .failure:
+                                    // Fallback on error
+                                    ZStack {
+                                        Rectangle().fill(Color.gtPaleGreen.opacity(0.15))
+                                        Text("🪴").font(.system(size: 100))
+                                    }
+                                    .aspectRatio(1.5, contentMode: .fit)
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                        } else {
+                            // No image URL — show emoji placeholder
+                            ZStack {
+                                Rectangle().fill(Color.gtPaleGreen.opacity(0.15))
+                                Text(plant.name.contains("Rose") ? "🌹" : "🪴")
+                                    .font(.system(size: 140))
+                                    .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                            }
+                            .aspectRatio(1.5, contentMode: .fit)
                         }
-                        .aspectRatio(1.5, contentMode: .fit)
                         
                         Text("\(Int(plant.healthScore))%")
                             .font(GTFont.labelSmall())

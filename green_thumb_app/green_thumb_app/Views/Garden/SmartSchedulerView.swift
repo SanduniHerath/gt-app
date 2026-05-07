@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SmartSchedulerView: View {
     @EnvironmentObject var router: AppRouter
-    @StateObject private var viewModel = SchedulerViewModel()
+    @EnvironmentObject var viewModel: SchedulerViewModel
     @State private var selectedDate = Date()
     
     // Optional plantId filter

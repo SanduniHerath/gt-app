@@ -44,21 +44,32 @@ struct GTCommunityPostCard: View {
             .padding(GTSpacing.md)
             
             // Image Section (Optional)
-            if let imageURL = post.imageURL {
-                ZStack {
-                    Color.gtPaleGreen.opacity(0.5) // Background for the image
-                    
-                    Image(systemName: "leaf.fill") // Placeholder for actual image
-                        .font(.system(size: 60))
-                        .foregroundColor(.gtDarkGreen.opacity(0.2))
-                    
-                    // In a real app, this would be an AsyncImage
-                     Rectangle()
-                         .fill(Color.gtLightGreen.opacity(0.3))
-                         .overlay(
-                             Image(systemName: "photo")
-                                 .foregroundColor(.white)
-                         )
+            if let imageURLString = post.imageURL,
+               let url = URL(string: imageURLString) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ZStack {
+                            Color.gtPaleGreen.opacity(0.3)
+                            ProgressView().tint(.gtDarkGreen)
+                        }
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 180)
+                            .clipped()
+                    case .failure:
+                        ZStack {
+                            Color.gtPaleGreen.opacity(0.5)
+                            Image(systemName: "photo")
+                                .font(.system(size: 40))
+                                .foregroundColor(.gtDarkGreen.opacity(0.3))
+                        }
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
                 .frame(height: 180)
                 .clipped()

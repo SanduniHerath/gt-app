@@ -126,6 +126,13 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Face ID logic
     func signInWithFaceID() {
+        // 🛡️ Check if enabled in App Settings
+        let isFaceIDEnabled = UserDefaults.standard.object(forKey: "faceIDEnabled") as? Bool ?? true
+        guard isFaceIDEnabled else {
+            self.errorMessage = "Face ID is disabled in settings. Please enable it to use biometric login."
+            return
+        }
+        
         let context = LAContext()
         var error: NSError?
         

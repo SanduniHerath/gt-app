@@ -72,6 +72,8 @@ struct PlantModel: Identifiable, Codable {
     var soilType: String
     var ageDays: Int
     var initialNote: String?
+    var lastDiagnosisName: String?   // ✅ Disease name from last diagnosis
+    var lastDiagnosisDate: Date?     // ✅ When the diagnosis was made
 
     init(
         id: UUID = .init(),
@@ -93,7 +95,9 @@ struct PlantModel: Identifiable, Codable {
         sunlight: String = "Unknown",
         soilType: String = "Unknown",
         ageDays: Int = 0,
-        initialNote: String? = nil
+        initialNote: String? = nil,
+        lastDiagnosisName: String? = nil,
+        lastDiagnosisDate: Date? = nil
     ) {
         self.id = id
         self.name = name
@@ -115,6 +119,8 @@ struct PlantModel: Identifiable, Codable {
         self.soilType = soilType
         self.ageDays = ageDays
         self.initialNote = initialNote
+        self.lastDiagnosisName = lastDiagnosisName
+        self.lastDiagnosisDate = lastDiagnosisDate
     }
 }
 

@@ -13,9 +13,7 @@ struct GTHealthRow: View {
                 .foregroundColor(.gtTextSecondary)
                 .frame(width: 80, alignment: .leading)
             
-            GTHealthBar(value: progress, height: 8)
-                .foregroundColor(color) // Note: GTHealthBar has internal color logic, but we can override or use it.
-                // Let's refine GTHealthBar to accept a custom color if needed.
+            GTHealthBar(value: progress, height: 8, customColor: color)
             
             Text(countLabel ?? "\(Int(progress * 100))%")
                 .font(GTFont.labelSmall())

@@ -12,16 +12,42 @@ struct GTPlantGridCard: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(LinearGradient(
-                            gradient: Gradient(colors: [Color.gtPaleGreen, Color.gtBackground]),
+                            gradient: Gradient(colors: [Color.gtPaleGreen.opacity(0.4), Color.gtBackground]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ))
-                        .aspectRatio(1.1, contentMode: .fit)
                     
-                    Text(emojiForPlant(plant.name))
-                        .font(.system(size: 64))
-                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                    if let imageURLString = plant.imageURL,
+                       let imageURL = URL(string: imageURLString) {
+                        // ✅ Real photo from Cloudinary
+                        AsyncImage(url: imageURL) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .tint(.gtDarkGreen)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 140) // Fixed height to match placeholder
+                                    .clipped()
+                            case .failure:
+                                Text(emojiForPlant(plant.name))
+                                    .font(.system(size: 64))
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    } else {
+                        // Emoji placeholder
+                        Text(emojiForPlant(plant.name))
+                            .font(.system(size: 64))
+                            .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                    }
                 }
+                .frame(height: 140) // ✅ Force same height for all card tops
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 
                 // Percentage Badge
                 Text("\(Int(plant.healthScore))%")

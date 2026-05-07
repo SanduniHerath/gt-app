@@ -15,8 +15,7 @@ class SchedulerViewModel: ObservableObject {
     private var listenerRegistration: ListenerRegistration?
     
     init() {
-        // fetchTasks() // Only uncomment to fetch all tasks globally
-        // seedTasks()  // Only uncomment once to seed
+        fetchTasks() // Fetch all tasks globally on startup
     }
 
     func seedTasks() {
@@ -31,28 +30,40 @@ class SchedulerViewModel: ObservableObject {
                 guard let docs = snapshot?.documents else { return }
                 
                 for doc in docs {
-                    let plantId = doc.documentID
-                    let plantName = doc.data()["name"] as? String ?? "Plant"
-                    
-                    let taskData: [(TaskType, Date, String)] = [
-                        (.water,     Date(), "Morning session: 300ml"),
-                        (.fertilize, Date(), "Use rose-specific liquid feed"),
-                        (.prune,     Calendar.current.date(byAdding: .day, value: 1, to: Date())!, "Remove spent blooms"),
-                        (.inspect,   Calendar.current.date(byAdding: .day, value: 2, to: Date())!, "Check for aphids under leaves")
-                    ]
-                    
-                    for (type, date, note) in taskData {
-                        let taskId = "\(plantId)-\(type.rawValue)"
-                        let task = SchedulerTaskModel(
-                            id: taskId, userId: userId, plantId: plantId, plantName: plantName,
-                            taskType: type, dueDate: date, notes: note
-                        )
-                        try? self.db.collection(self.collectionName).document(task.id).setData(from: task)
+                    if let plant = try? doc.data(as: PlantModel.self) {
+                        self.generateDefaultTasks(for: plant)
                     }
                 }
                 print("✅ Clean Sweep Complete! Your database is now tidy.")
             }
         }
+    }
+
+    /// 🪴 Generates the 4 standard care tasks for a specific plant
+    func generateDefaultTasks(for plant: PlantModel) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let taskData: [(TaskType, Date, String)] = [
+            (.water,     Date(), "Morning session: 300ml"),
+            (.fertilize, Date(), "Use rose-specific liquid feed"),
+            (.prune,     Calendar.current.date(byAdding: .day, value: 1, to: Date())!, "Remove spent blooms"),
+            (.inspect,   Calendar.current.date(byAdding: .day, value: 2, to: Date())!, "Check for aphids under leaves")
+        ]
+        
+        for (type, date, note) in taskData {
+            let taskId = "\(plant.id.uuidString)-\(type.rawValue)"
+            let task = SchedulerTaskModel(
+                id: taskId, 
+                userId: userId, 
+                plantId: plant.id.uuidString, 
+                plantName: plant.name,
+                taskType: type, 
+                dueDate: date, 
+                notes: note
+            )
+            try? db.collection(collectionName).document(task.id).setData(from: task)
+        }
+        print("📅 Created 4 default tasks for: \(plant.name)")
     }
 
     func fetchTasks(for plantId: String? = nil) {

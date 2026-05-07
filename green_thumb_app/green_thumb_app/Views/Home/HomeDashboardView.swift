@@ -9,7 +9,7 @@ struct HomeDashboardView: View {
     @State private var showNotifications  = false
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     // ── Header (Forest Green) ─────────────────────────────
@@ -41,30 +41,70 @@ struct HomeDashboardView: View {
 
                     // ── Body (Light Gray) ─────────────────────────────────
                     VStack(alignment: .leading, spacing: GTSpacing.lg) {
-                        // 2x2 Stat Grid
+                        // 2x2 Stat Grid — all cards navigate to Garden Analytics
                         VStack(spacing: GTSpacing.sm) {
                             HStack(spacing: GTSpacing.sm) {
-                                Button {
-                                    router.navigate(to: .gardenAnalytics)
-                                } label: {
-                                    GTGridStatCard(value: "12", label: "Total Plants", icon: "leaf.fill", color: .gtAccentGreen)
-                                }
-                                GTGridStatCard(value: "7", label: "Day Streak", icon: "flame.fill", subtext: "personal best", color: .gtStreak)
+                                let totalPlants = plantVM.plants.count
+                                GTGridStatCard(
+                                    value: "\(totalPlants)", 
+                                    label: "Total Plants", 
+                                    icon: "leaf.fill", 
+                                    color: .gtAccentGreen
+                                )
+                                .onTapGesture { router.navigate(to: .gardenAnalytics) }
+                                
+                                let globalStreak = profileVM.profile.streakDays
+                                GTGridStatCard(
+                                    value: "\(globalStreak)", 
+                                    label: "Day Streak", 
+                                    icon: "flame.fill", 
+                                    subtext: "personal best", 
+                                    color: .gtStreak
+                                )
+                                .onTapGesture { router.navigate(to: .gardenAnalytics) }
                             }
                             HStack(spacing: GTSpacing.sm) {
-                                GTGridStatCard(value: "3", label: "Today Tasks", icon: "clock.fill", subtext: "2 pending", color: .gtWatering)
-                                GTGridStatCard(value: "1", label: "Active alerts", icon: "triangle.fill", subtext: "Needs care", color: .gtStatusUrgent)
+                                let todayTasks = schedulerVM.tasks(for: Date())
+                                let pendingCount = todayTasks.filter { !$0.isCompleted }.count
+                                GTGridStatCard(
+                                    value: "\(todayTasks.count)", 
+                                    label: "Today Tasks", 
+                                    icon: "clock.fill", 
+                                    subtext: "\(pendingCount) pending", 
+                                    color: .gtWatering
+                                )
+                                .onTapGesture { router.navigate(to: .gardenAnalytics) }
+                                
+                                let alertCount = plantVM.plants.filter { $0.status == .warning || $0.status == .critical }.count
+                                GTGridStatCard(
+                                    value: "\(alertCount)", 
+                                    label: "Active alerts", 
+                                    icon: "triangle.fill", 
+                                    subtext: alertCount > 0 ? "\(alertCount) needs care" : "All healthy", 
+                                    color: alertCount > 0 ? .gtStatusUrgent : .gtDarkGreen
+                                )
+                                .onTapGesture { router.navigate(to: .gardenAnalytics) }
                             }
                         }
                         .padding(.top, GTSpacing.lg)
                         
-                        // Alert Banner
-                        GTAlertBanner(
-                            title: "Rose Bush Yellow Leaves",
-                            subtitle: "Possible nitrogen deficiency detected",
-                            actionTitle: "Diagnose"
-                        ) {
-                            // Diagnosis action
+                        // Alert Banner (Dynamic — shows real diagnosis name)
+                        if let alertingPlant = plantVM.plants.first(where: { $0.status == .warning || $0.status == .critical }) {
+                            let diagnosisSubtitle: String = {
+                                if let disease = alertingPlant.lastDiagnosisName {
+                                    return "\(disease) detected – tap to view treatment"
+                                }
+                                return alertingPlant.status == .critical
+                                    ? "Critical health — immediate care needed"
+                                    : "Symptoms noticed — run a diagnosis"
+                            }()
+                            GTAlertBanner(
+                                title: "\(alertingPlant.name) needs attention",
+                                subtitle: diagnosisSubtitle,
+                                actionTitle: "Check"
+                            ) {
+                                router.navigate(to: .plantDetails(alertingPlant))
+                            }
                         }
 
                         // Today's tasks
@@ -73,10 +113,28 @@ struct HomeDashboardView: View {
                                 .font(GTFont.labelLarge())
                                 .foregroundColor(.gtTextPrimary)
                             
-                            VStack(spacing: GTSpacing.sm) {
-                                HomeTaskRow(title: "Water Tomatoes", subtitle: "Back garden – 250ml", icon: "leaf.fill", color: .gtAccentGreen, isDone: true)
-                                HomeTaskRow(title: "Water Rose Bush", subtitle: "Front garden – 300ml", icon: "drop.fill", color: .gtWatering, time: "2:00 PM")
-                                HomeTaskRow(title: "Fertilise Basil", subtitle: "Balcony pot – NPK 10-10-10", icon: "square.grid.2x2.fill", color: .gtFertilizer, time: "5:00 PM")
+                            let todayTasks = schedulerVM.tasks(for: Date())
+                            if todayTasks.isEmpty {
+                                Text("No tasks for today. Enjoy your garden!")
+                                    .font(GTFont.bodySmall())
+                                    .foregroundColor(.gtTextSecondary)
+                                    .padding(.vertical, 10)
+                            } else {
+                                VStack(spacing: GTSpacing.sm) {
+                                    ForEach(todayTasks.prefix(3)) { task in
+                                        HomeTaskRow(
+                                            title: "\(task.taskType.rawValue) \(task.plantName)", 
+                                            subtitle: task.notes ?? "Maintenance", 
+                                            icon: iconForType(task.taskType), 
+                                            color: colorForType(task.taskType), 
+                                            isDone: task.isCompleted,
+                                            time: task.isCompleted ? nil : task.dueDate.formatted(date: .omitted, time: .shortened)
+                                        )
+                                        .onTapGesture {
+                                            schedulerVM.toggleTask(task)
+                                        }
+                                    }
+                                }
                             }
                         }
                         
@@ -86,18 +144,28 @@ struct HomeDashboardView: View {
                                 .font(GTFont.labelLarge())
                                 .foregroundColor(.gtTextPrimary)
                             
-                            VStack(spacing: GTSpacing.md) {
-                                GTHealthRow(name: "Tomatoes", progress: 0.88, color: .gtAccentGreen)
-                                GTHealthRow(name: "Rose Bush", progress: 0.54, color: .orange)
-                                GTHealthRow(name: "Basil", progress: 0.95, color: .teal)
-                                GTHealthRow(name: "Chilli", progress: 0.72, color: .gtAccentGreen)
+                            if plantVM.plants.isEmpty {
+                                Text("Add plants to see health status.")
+                                    .font(GTFont.bodySmall())
+                                    .foregroundColor(.gtTextSecondary)
+                                    .padding(.vertical, 10)
+                            } else {
+                                VStack(spacing: GTSpacing.md) {
+                                    ForEach(plantVM.plants.prefix(4)) { plant in
+                                        GTHealthRow(
+                                            name: plant.name, 
+                                            progress: plant.healthScore / 100, 
+                                            color: healthColor(for: plant.healthScore)
+                                        )
+                                    }
+                                }
+                                .padding(GTSpacing.md)
+                                .background(
+                                    RoundedRectangle(cornerRadius: GTRadius.md)
+                                        .fill(Color.white)
+                                        .gtShadow(GTShadow.card)
+                                )
                             }
-                            .padding(GTSpacing.md)
-                            .background(
-                                RoundedRectangle(cornerRadius: GTRadius.md)
-                                    .fill(Color.white)
-                                    .gtShadow(GTShadow.card)
-                            )
                         }
 
                         Spacer(minLength: 120)
@@ -142,6 +210,37 @@ struct HomeDashboardView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Helper Functions
+extension HomeDashboardView {
+    private func iconForType(_ type: TaskType) -> String {
+        switch type {
+        case .water: return "drop.fill"
+        case .fertilize: return "shield.fill"
+        case .repot: return "leaf.fill"
+        case .prune: return "scissors"
+        case .inspect: return "magnifyingglass"
+        default: return "info.circle.fill"
+        }
+    }
+    
+    private func colorForType(_ type: TaskType) -> Color {
+        switch type {
+        case .water: return .gtWatering
+        case .fertilize: return .gtAccentGreen
+        case .repot: return .orange
+        case .prune: return .gtStatusUrgent
+        case .inspect: return .gtDarkGreen
+        default: return .gtTextMuted
+        }
+    }
+    
+    private func healthColor(for score: Double) -> Color {
+        if score < 60 { return .gtStatusUrgent }
+        if score < 85 { return .orange }
+        return .gtAccentGreen
     }
 }
 

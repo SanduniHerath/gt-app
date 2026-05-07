@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import FirebaseFirestore
+import FirebaseAuth
 
 @MainActor
 class DiagnoseViewModel: ObservableObject {
@@ -8,19 +9,19 @@ class DiagnoseViewModel: ObservableObject {
     @Published var selectedSymptoms: [String] = []
     @Published var severity: Double = 0.5 // 0.0: Mild, 0.5: Moderate, 1.0: Severe
     @Published var selectedParts: Set<String> = ["Leaves", "Roots"]
-    @Published var selectedPlant: PlantModel? = PlantModel.samples[1] // Default to Rose Bush
+    @Published var selectedPlant: PlantModel? = nil   // Set by SymptomCheckerView plant picker
     
     @Published var currentResult: DiagnosisResultData? = nil
     @Published var isAnalyzing: Bool = false
     @Published var knowledgeBase: [DiagnosisResultData] = []
     
     private let db = Firestore.firestore()
-
+    
     init() {
         fetchKnowledgeBase()
         //seedDatabase()
     }
-
+    
     func fetchKnowledgeBase() {
         db.collection("diagnoses").getDocuments { snapshot, error in
             if let error = error {
@@ -28,9 +29,9 @@ class DiagnoseViewModel: ObservableObject {
                 return
             }
             
-            guard let documents = snapshot?.documents else { 
+            guard let documents = snapshot?.documents else {
                 print("⚠️ No documents found in 'diagnoses' collection")
-                return 
+                return
             }
             
             print("🔍 Found \(documents.count) raw documents in Firestore. Attempting to decode...")
@@ -48,7 +49,7 @@ class DiagnoseViewModel: ObservableObject {
             print("✅ Successfully loaded \(self.knowledgeBase.count) diagnoses from Firestore")
         }
     }
-
+    
     // Call this function ONCE to populate your Firestore with the initial data
     func seedDatabase() {
         let initialData = [
@@ -96,7 +97,7 @@ class DiagnoseViewModel: ObservableObject {
             }
         }
     }
-
+    
     let commonSymptoms = [
         "Yellow leaves", "Brown spots", "Wilting",
         "White powder", "Sticky residue", "Holes in leaves",
@@ -104,7 +105,7 @@ class DiagnoseViewModel: ObservableObject {
     ]
     
     let affectedParts = ["Leaves", "Stems", "Roots", "Buds", "Whole", "Fruit"]
-
+    
     func toggleSymptom(_ symptom: String) {
         if selectedSymptoms.contains(symptom) {
             selectedSymptoms.removeAll { $0 == symptom }
@@ -120,7 +121,7 @@ class DiagnoseViewModel: ObservableObject {
             selectedParts.insert(part)
         }
     }
-
+    
     func analyze() {
         isAnalyzing = true
         
@@ -148,6 +149,11 @@ class DiagnoseViewModel: ObservableObject {
             self.currentResult = result
             self.isAnalyzing = false
             
+            // ✅ Write diagnosis result back to the plant in Firestore
+            if let diagnosis = result, let plant = self.selectedPlant {
+                self.updatePlantHealth(plant: plant, diagnosis: diagnosis)
+            }
+            
             // 🔔 Schedule 7-day follow-up reminder
             if let diagnosis = result {
                 let plantName = self.selectedPlant?.name ?? "your plant"
@@ -160,5 +166,36 @@ class DiagnoseViewModel: ObservableObject {
             }
         }
     }
-
+    
+    // MARK: - Write Diagnosis Back to Plant
+    private func updatePlantHealth(plant: PlantModel, diagnosis: DiagnosisResultData) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("❌ Cannot update plant health: No user logged in")
+            return
+        }
+        
+        // Severity (0.0 mild → 1.0 severe) drives health penalty: up to -45 pts
+        let severityPenalty = severity * 45.0
+        let newHealthScore  = max(10.0, plant.healthScore - severityPenalty)
+        let newStatus       = newHealthScore < 50 ? PlantStatus.critical.rawValue
+        : PlantStatus.warning.rawValue
+        
+        let docRef = Firestore.firestore()
+            .collection("users").document(userId)
+            .collection("plants").document(plant.id.uuidString)
+        
+        docRef.updateData([
+            "healthScore":        newHealthScore,
+            "status":             newStatus,
+            "lastDiagnosisName": diagnosis.name,
+            "lastDiagnosisDate": Timestamp(date: Date())
+        ]) { error in
+            if let error = error {
+                print("❌ Failed to update plant health: \(error.localizedDescription)")
+            } else {
+                print("✅ Plant health updated → \(plant.name): \(diagnosis.name) | score: \(Int(newHealthScore))%")
+            }
+        }
+    }
+    
 }

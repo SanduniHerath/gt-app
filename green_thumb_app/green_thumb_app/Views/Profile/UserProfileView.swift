@@ -104,7 +104,7 @@ struct UserProfileView: View {
     private var myProfileContent: some View {
         VStack(spacing: GTSpacing.lg) {
             // Streak Alert
-            GTStreakAlertCard(streak: 7, best: 12)
+            GTStreakAlertCard(streak: profileVM.profile.streakDays, best: profileVM.profile.streakDays + 5)
             
             // My Plants Section
             VStack(alignment: .leading, spacing: GTSpacing.md) {
@@ -112,13 +112,30 @@ struct UserProfileView: View {
                     .font(GTFont.labelLarge())
                     .foregroundColor(.gtTextPrimary)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: GTSpacing.md) {
-                        GTPlantCompactCard(name: "Tomatoes", health: 88, icon: "🛡️", borderColor: .gtDarkGreen)
-                        GTPlantCompactCard(name: "Rose Bush", health: 54, icon: "⚠️", borderColor: .gtStatusUrgent)
-                        // Add more if needed
+                if profileVM.recentPlants.isEmpty {
+                    Text("No plants tracked yet. Start adding some!")
+                        .font(GTFont.bodySmall())
+                        .foregroundColor(.gtTextMuted)
+                        .padding(.vertical, GTSpacing.md)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: GTSpacing.md) {
+                            ForEach(profileVM.recentPlants) { plant in
+                                Button {
+                                    router.navigate(to: .plantDetails(plant))
+                                } label: {
+                                    GTPlantCompactCard(
+                                        name: plant.name,
+                                        health: Int.random(in: 70...95), // Mock health for now
+                                        icon: "🪴",
+                                        imageURL: plant.imageURL,
+                                        borderColor: .gtDarkGreen
+                                    )
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 2)
                     }
-                    .padding(.horizontal, 2) // For shadows
                 }
             }
             
@@ -128,10 +145,28 @@ struct UserProfileView: View {
                     .font(GTFont.labelLarge())
                     .foregroundColor(.gtTextPrimary)
                 
-                VStack(spacing: 0) {
-                    GTSessionHistoryRow(expert: "Dr. Nimal Perera", topic: "Rose Bush", detail: "Nitrogen Deficincy", rating: 5, date: "Today", initials: "NP", color: Color.gtBadgePurpleText)
-                    Divider()
-                    GTSessionHistoryRow(expert: "Dr. Saman Kumara", topic: "Basil", detail: "General care consultation", rating: 4, date: "3 days ago", initials: "SK", color: Color.gtBadgeTealText)
+                if profileVM.recentSessions.isEmpty {
+                    Text("No sessions booked yet.")
+                        .font(GTFont.bodySmall())
+                        .foregroundColor(.gtTextMuted)
+                        .padding(.vertical, GTSpacing.md)
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(profileVM.recentSessions.prefix(3)) { session in
+                            GTSessionHistoryRow(
+                                expert: session.expertName,
+                                topic: "Garden Consultation",
+                                detail: "Session on \(session.timeSlot)",
+                                rating: 5,
+                                date: session.date.formatted(date: .abbreviated, time: .omitted),
+                                initials: String(session.expertName.prefix(1)),
+                                color: Color.gtBadgePurpleText
+                            )
+                            if session.id != profileVM.recentSessions.prefix(3).last?.id {
+                                Divider()
+                            }
+                        }
+                    }
                 }
             }
             

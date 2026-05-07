@@ -1,15 +1,35 @@
 import SwiftUI
 
 struct GardenAnalyticsView: View {
-    @EnvironmentObject var router: AppRouter
+    @EnvironmentObject var router:      AppRouter
+    @EnvironmentObject var plantVM:     PlantViewModel
+    @EnvironmentObject var schedulerVM: SchedulerViewModel
     @State private var selectedPeriod = 0
-    
-    // Mock data for streak: last 14 days
+
+    // ── Computed stats from real data ──────────────────────────────
+    private var wateringSessions: Int {
+        schedulerVM.tasks.filter { $0.taskType == .water && $0.isCompleted }.count
+    }
+    private var fertilizerSessions: Int {
+        schedulerVM.tasks.filter { $0.taskType == .fertilize && $0.isCompleted }.count
+    }
+    private var diseasesTreated: Int {
+        plantVM.plants.filter { $0.lastDiagnosisName != nil }.count
+    }
+    private var diagnosedPlants: [PlantModel] {
+        plantVM.plants.filter { $0.lastDiagnosisName != nil }
+    }
+    private var averageHealth: Double {
+        guard !plantVM.plants.isEmpty else { return 0 }
+        return plantVM.plants.map { $0.healthScore }.reduce(0, +) / Double(plantVM.plants.count)
+    }
+
+    // Static streak pattern (historical daily data not yet tracked in Firestore)
     let streakDays = [false, true, true, false, true, false, true, true, false, true, true, true, true, true]
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // ── Header ─────────────────────────────────────────────
             HStack {
                 Button { router.pop() } label: {
                     ZStack {
@@ -19,55 +39,153 @@ struct GardenAnalyticsView: View {
                             .foregroundColor(.gtTextPrimary)
                     }
                 }
-                
+
                 Text("Garden Analytics")
                     .font(GTFont.displaySmall())
                     .foregroundColor(.gtTextPrimary)
                     .padding(.leading, GTSpacing.sm)
-                
+
                 Spacer()
             }
             .padding(.horizontal, GTSpacing.lg)
             .padding(.top, GTSpacing.lg)
             .padding(.bottom, GTSpacing.md)
             .background(Color.gtBackground)
-            
+
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GTSpacing.lg) {
+
                     // Period Toggle
                     GTSegmentedControl(options: ["Week", "Month"], selectedIndex: $selectedPeriod)
                         .padding(.top, GTSpacing.sm)
-                    
-                    // Main Stats 3-column
+
+                    // ── Dynamic 3-column stat cards ─────────────────
                     HStack(spacing: GTSpacing.sm) {
-                        SmallStatCard(value: "26", label: "Watering sessions", color: .gtWatering)
-                        SmallStatCard(value: "10", label: "Fertilizer sessions", color: .gtFertilizer)
-                        SmallStatCard(value: "2", label: "Diseases treated", color: .gtStatusUrgent)
-                    }
-                    
-                    // Watering Streak
-                    GTStreakGrid(days: streakDays)
-                    
-                    // Disease History
-                    VStack(alignment: .leading, spacing: GTSpacing.sm) {
-                        Text("Disease history this season")
-                            .font(GTFont.labelLarge())
-                            .foregroundColor(.gtTextPrimary)
-                        
-                        VStack(spacing: GTSpacing.md) {
-                            GTHealthRow(name: "Leaf Yellowing", progress: 0.8, color: Color(red: 0.9, green: 0.4, blue: 0.3), countLabel: "4×")
-                            GTHealthRow(name: "Root rot (minor)", progress: 0.5, color: Color(red: 1.0, green: 0.7, blue: 0.2), countLabel: "2×")
-                            GTHealthRow(name: "Aphid infestation", progress: 0.15, color: Color(red: 0.6, green: 0.5, blue: 0.9), countLabel: "1×")
-                        }
-                        .padding(GTSpacing.md)
-                        .background(
-                            RoundedRectangle(cornerRadius: GTRadius.md)
-                                .fill(Color.white)
-                                .gtShadow(GTShadow.card)
+                        SmallStatCard(
+                            value: "\(wateringSessions)",
+                            label: "Watering sessions",
+                            color: .gtWatering
+                        )
+                        SmallStatCard(
+                            value: "\(fertilizerSessions)",
+                            label: "Fertilizer sessions",
+                            color: .gtFertilizer
+                        )
+                        SmallStatCard(
+                            value: "\(diseasesTreated)",
+                            label: "Diseases treated",
+                            color: .gtStatusUrgent
                         )
                     }
-                    
-                    Spacer(minLength: 50)
+
+                    // ── Average Garden Health ───────────────────────
+                    if !plantVM.plants.isEmpty {
+                        VStack(alignment: .leading, spacing: GTSpacing.sm) {
+                            Text("Overall garden health")
+                                .font(GTFont.labelLarge())
+                                .foregroundColor(.gtTextPrimary)
+
+                            HStack(spacing: GTSpacing.md) {
+                                // Big health score circle
+                                ZStack {
+                                    Circle()
+                                        .stroke(healthColor(for: averageHealth).opacity(0.15), lineWidth: 10)
+                                        .frame(width: 80, height: 80)
+                                    Circle()
+                                        .trim(from: 0, to: averageHealth / 100)
+                                        .stroke(healthColor(for: averageHealth), style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                                        .rotationEffect(.degrees(-90))
+                                        .frame(width: 80, height: 80)
+                                        .animation(.easeOut(duration: 0.8), value: averageHealth)
+                                    Text("\(Int(averageHealth))%")
+                                        .font(GTFont.labelLarge())
+                                        .foregroundColor(.gtTextPrimary)
+                                }
+
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("\(plantVM.plants.count) plants in your garden")
+                                        .font(GTFont.bodyMedium())
+                                        .foregroundColor(.gtTextSecondary)
+                                    Text(averageHealth >= 85 ? "🌿 Garden is thriving!" : averageHealth >= 65 ? "⚠️ Some plants need care" : "🚨 Urgent attention needed")
+                                        .font(GTFont.labelMedium())
+                                        .foregroundColor(healthColor(for: averageHealth))
+                                }
+
+                                Spacer()
+                            }
+                            .padding(GTSpacing.md)
+                            .background(
+                                RoundedRectangle(cornerRadius: GTRadius.md)
+                                    .fill(Color.white)
+                                    .gtShadow(GTShadow.card)
+                            )
+                        }
+                    }
+
+                    // ── Watering Streak ─────────────────────────────
+                    GTStreakGrid(days: streakDays)
+
+                    // ── Disease History (Dynamic) ───────────────────
+                    VStack(alignment: .leading, spacing: GTSpacing.sm) {
+                        Text("Disease history")
+                            .font(GTFont.labelLarge())
+                            .foregroundColor(.gtTextPrimary)
+
+                        if diagnosedPlants.isEmpty {
+                            Text("No diseases diagnosed yet. Your garden is healthy! 🌿")
+                                .font(GTFont.bodySmall())
+                                .foregroundColor(.gtTextSecondary)
+                                .padding(.vertical, 12)
+                        } else {
+                            VStack(spacing: GTSpacing.md) {
+                                ForEach(diagnosedPlants) { plant in
+                                    GTHealthRow(
+                                        name: "\(plant.name) – \(plant.lastDiagnosisName ?? "")",
+                                        progress: plant.healthScore / 100,
+                                        color: healthColor(for: plant.healthScore),
+                                        countLabel: plant.status == .critical ? "Critical" : "Warning"
+                                    )
+                                }
+                            }
+                            .padding(GTSpacing.md)
+                            .background(
+                                RoundedRectangle(cornerRadius: GTRadius.md)
+                                    .fill(Color.white)
+                                    .gtShadow(GTShadow.card)
+                            )
+                        }
+                    }
+
+                    // ── Per-Plant Health Breakdown ──────────────────
+                    if !plantVM.plants.isEmpty {
+                        VStack(alignment: .leading, spacing: GTSpacing.sm) {
+                            Text("Plant health breakdown")
+                                .font(GTFont.labelLarge())
+                                .foregroundColor(.gtTextPrimary)
+
+                            VStack(spacing: GTSpacing.md) {
+                                ForEach(plantVM.plants) { plant in
+                                    Button {
+                                        router.navigate(to: .plantDetails(plant))
+                                    } label: {
+                                        GTHealthRow(
+                                            name: plant.name,
+                                            progress: plant.healthScore / 100,
+                                            color: healthColor(for: plant.healthScore)
+                                        )
+                                    }
+                                }
+                            }
+                            .padding(GTSpacing.md)
+                            .background(
+                                RoundedRectangle(cornerRadius: GTRadius.md)
+                                    .fill(Color.white)
+                                    .gtShadow(GTShadow.card)
+                            )
+                        }
+                    }
+
+                    Spacer(minLength: 80)
                 }
                 .padding(.horizontal, GTSpacing.lg)
             }
@@ -75,13 +193,20 @@ struct GardenAnalyticsView: View {
         }
         .navigationBarHidden(true)
     }
+
+    private func healthColor(for score: Double) -> Color {
+        if score < 60 { return .gtStatusUrgent }
+        if score < 85 { return .orange }
+        return .gtAccentGreen
+    }
 }
 
+// MARK: - SmallStatCard
 private struct SmallStatCard: View {
     let value: String
     let label: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
@@ -107,6 +232,7 @@ private struct SmallStatCard: View {
     NavigationStack {
         GardenAnalyticsView()
             .environmentObject(AppRouter())
+            .environmentObject(PlantViewModel())
+            .environmentObject(SchedulerViewModel())
     }
 }
-

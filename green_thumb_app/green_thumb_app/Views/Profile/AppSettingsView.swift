@@ -4,11 +4,11 @@ struct AppSettingsView: View {
     @EnvironmentObject var profileVM:  ProfileViewModel
     @Environment(\.dismiss) var dismiss
     
-    @State private var pushNotifications = true
-    @State private var diseaseAlerts = true
-    @State private var faceIDEnabled = true
-    @State private var siriShortcuts = false
-    @State private var locationServices = true
+    @AppStorage("pushNotificationsEnabled") private var pushNotifications = true
+    @AppStorage("diseaseAlertsEnabled") private var diseaseAlerts = true
+    @AppStorage("faceIDEnabled") private var faceIDEnabled = true
+    @AppStorage("eventManagementEnabled") private var eventManagementEnabled = true
+    @AppStorage("locationServicesEnabled") private var locationServices = true
     
     var body: some View {
         VStack(spacing: 0) {
@@ -109,12 +109,12 @@ struct AppSettingsView: View {
                     // Advanced
                     GTSettingCard(title: "Advanced features") {
                         GTSettingRow(
-                            icon: "clock.fill",
+                            icon: "calendar",
                             iconBgColor: Color.gtLightGreen,
-                            title: "Siri shortcuts",
-                            subtitle: "Voice commands enabled",
+                            title: "Gardeners events management",
+                            subtitle: "manage your garden events",
                             showNewBadge: true,
-                            isOn: $siriShortcuts
+                            isOn: $eventManagementEnabled
                         )
                         Divider()
                         GTSettingRow(

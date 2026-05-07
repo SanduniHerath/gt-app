@@ -4,6 +4,7 @@ struct GTPlantCompactCard: View {
     let name: String
     let health: Int
     let icon: String // Emoji
+    var imageURL: String? = nil // Real photo URL
     let borderColor: Color
     
     var body: some View {
@@ -13,8 +14,28 @@ struct GTPlantCompactCard: View {
                     .fill(borderColor.opacity(0.1))
                     .frame(width: 44, height: 44)
                 
-                Text(icon)
-                    .font(.system(size: 24))
+                if let imageURLString = imageURL,
+                   let url = URL(string: imageURLString) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView().tint(.gtDarkGreen)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 44, height: 44)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        case .failure:
+                            Text(icon).font(.system(size: 24))
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                } else {
+                    Text(icon)
+                        .font(.system(size: 24))
+                }
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -44,8 +65,8 @@ struct GTPlantCompactCard: View {
 
 #Preview {
     HStack {
-        GTPlantCompactCard(name: "Tomatoes", health: 88, icon: "🛡️", borderColor: .gtDarkGreen)
-        GTPlantCompactCard(name: "Rose Bush", health: 54, icon: "⚠️", borderColor: .gtStatusUrgent)
+        GTPlantCompactCard(name: "Tomatoes", health: 88, icon: "🍅", borderColor: .gtDarkGreen)
+        GTPlantCompactCard(name: "Rose Bush", health: 54, icon: "🌹", borderColor: .gtStatusUrgent)
     }
     .padding()
     .background(Color.gtBackground)

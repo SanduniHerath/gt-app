@@ -8,8 +8,17 @@ class CalendarManager {
     
     private init() {}
     
+    private var isEventsEnabled: Bool {
+        return UserDefaults.standard.object(forKey: "eventManagementEnabled") as? Bool ?? true
+    }
+    
     /// Requests access to both Calendar and Reminders
     func requestAccess(completion: @escaping (Bool) -> Void) {
+        guard isEventsEnabled else {
+            completion(false)
+            return
+        }
+        
         eventStore.requestAccess(to: .event) { granted, _ in
             if granted {
                 self.eventStore.requestAccess(to: .reminder) { grantedReminders, _ in

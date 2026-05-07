@@ -1,10 +1,12 @@
 import SwiftUI
+import PhotosUI
 
 struct AddPlantView: View {
     @StateObject private var viewModel = AddPlantViewModel()
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var router: AppRouter
     @EnvironmentObject var plantVM: PlantViewModel
+    @EnvironmentObject var schedulerVM: SchedulerViewModel
     
     var body: some View {
         ZStack {
@@ -69,9 +71,10 @@ struct AddPlantView: View {
                         // Action Buttons
                         VStack(spacing: GTSpacing.sm) {
                             GTButton(
-                                title: "Continue to care setup",
-                                trailingIcon: "arrow.right",
+                                title: viewModel.isUploadingImage ? "Uploading photo..." : "Continue to care setup",
+                                trailingIcon: viewModel.isUploadingImage ? nil : "arrow.right",
                                 style: .primary,
+                                isLoading: viewModel.isUploadingImage,
                                 action: {
                                     viewModel.savePlant()
                                 }
@@ -99,7 +102,13 @@ struct AddPlantView: View {
         .navigationBarHidden(true)
         .onAppear {
             viewModel.onSave = { plant in
+                // 1. Save the plant
                 plantVM.addPlant(plant)
+                
+                // 2. Generate the 4 default care tasks
+                schedulerVM.generateDefaultTasks(for: plant)
+                
+                // 3. Navigate away
                 router.pop()
                 router.navigate(to: .plantDetails(plant))
             }
@@ -136,40 +145,74 @@ struct AddPlantView: View {
     }
     
     private var photoPickerBox: some View {
-        Button {
-            // Action to pick photo
-        } label: {
-            VStack(spacing: 8) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.white)
-                        .frame(width: 40, height: 40)
-                    Image(systemName: "photo")
-                        .foregroundColor(.gtDarkGreen)
-                        .font(.system(size: 20))
-                }
-                
-                VStack(spacing: 2) {
-                    Text("Add a photo of your plant")
-                        .font(GTFont.labelMedium())
-                        .foregroundColor(.gtTextPrimary)
-                    Text("Choose a photo from library")
-                        .font(GTFont.bodySmall())
-                        .foregroundColor(.gtTextSecondary)
+        PhotosPicker(
+            selection: $viewModel.selectedPhotoItem,
+            matching: .images,
+            photoLibrary: .shared()
+        ) {
+            ZStack {
+                // Show thumbnail if image is selected, otherwise show placeholder
+                if let selectedImage = viewModel.selectedImage {
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 180)
+                        .clipped()
+                        .clipShape(RoundedRectangle(cornerRadius: GTRadius.lg))
+                        .overlay(
+                            // Edit overlay
+                            VStack {
+                                Spacer()
+                                HStack {
+                                    Spacer()
+                                    Label("Change", systemImage: "pencil")
+                                        .font(GTFont.labelSmall())
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.black.opacity(0.5))
+                                        .clipShape(Capsule())
+                                        .padding(10)
+                                }
+                            }
+                        )
+                } else {
+                    // Empty placeholder
+                    VStack(spacing: 8) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.white)
+                                .frame(width: 40, height: 40)
+                            Image(systemName: "photo.badge.plus")
+                                .foregroundColor(.gtDarkGreen)
+                                .font(.system(size: 20))
+                        }
+                        VStack(spacing: 2) {
+                            Text("Add a photo of your plant")
+                                .font(GTFont.labelMedium())
+                                .foregroundColor(.gtTextPrimary)
+                            Text("Tap to choose from your library")
+                                .font(GTFont.bodySmall())
+                                .foregroundColor(.gtTextSecondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 140)
+                    .background(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: GTRadius.lg)
+                                .fill(Color.gtPaleGreen.opacity(0.4))
+                            RoundedRectangle(cornerRadius: GTRadius.lg)
+                                .stroke(style: StrokeStyle(lineWidth: 1.5, dash: [6]))
+                                .foregroundColor(.gtMidGreen)
+                        }
+                    )
                 }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 140)
-            .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: GTRadius.lg)
-                        .fill(Color.gtPaleGreen.opacity(0.4))
-                    
-                    RoundedRectangle(cornerRadius: GTRadius.lg)
-                        .stroke(style: StrokeStyle(lineWidth: 1.5, dash: [6]))
-                        .foregroundColor(.gtMidGreen)
-                }
-            )
+        }
+        .onChange(of: viewModel.selectedPhotoItem) { _ in
+            viewModel.loadSelectedImage()
         }
     }
     
